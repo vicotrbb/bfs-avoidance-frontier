@@ -1,0 +1,14 @@
+n=1 count=1
+n=2 count=1
+n=3 count=2
+n=4 count=4
+n=5 count=10
+n=6 count=27
+n=7 count=79
+n=8 count=239
+n=9 count=753
+n=10 count=2439
+n=11 count=8095
+n=12 count=27350
+n=13 count=93885
+n=14 count=326396

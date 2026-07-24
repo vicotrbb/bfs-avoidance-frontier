@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use these results or this code, please cite this repository."
+title: "BFS-Avoidance Frontier: Rigidity Theorems for Pattern-Avoiding BFS Words of Increasing Trees"
+authors:
+  - family-names: "Bona"
+    given-names: "Victor"
+date-released: "2026-07-24"
+version: "1.0.0"
+keywords:
+  - enumerative combinatorics
+  - pattern avoidance
+  - increasing trees
+  - binary heaps
+  - OEIS
+  - Lean 4
+  - formal verification
+license: MIT
+abstract: >
+  Two rigidity theorems about breadth-first-search reading words of
+  increasing trees, resolving three conjectures recorded in the OEIS
+  (A245898-A245903, A246747), with prose proofs, exhaustive computational
+  verification, and complete machine-checked formalizations in Lean 4.

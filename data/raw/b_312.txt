@@ -1,0 +1,8 @@
+n=1 count=1
+n=3 count=2
+n=5 count=7
+n=7 count=37
+n=9 count=222
+n=11 count=1601
+n=13 count=12416
+n=15 count=105769
