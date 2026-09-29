@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exhaustive machine verification of every lemma/theorem in docs/THEOREMS.md.
+"""Finite verification of the original binary theorems and auxiliary lemmas.
 
 Run: python3 python/verify_theorems.py  (from the repository root)   (~2-3 min)
 Exits nonzero on any failure.
@@ -63,7 +63,7 @@ for n in (8, 9):
             return any(feasible(w[a:b], w[b:e]) and T(b, e) for e in range(b + 1, n + 1))
         for a in range(0, n):
             for b in range(a + 1, n):
-                # B5: unconditional promotion cascade (all words)
+                # B5: no pattern filter on the sampled realizable permutations
                 if T(a, b):
                     b5 += 1
                     check("Lemma B5 (T+)", T(a, b + 1), (w, a, b))

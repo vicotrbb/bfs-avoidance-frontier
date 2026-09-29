@@ -1,0 +1,69 @@
+{
+  "status": "pass",
+  "checked_at_utc": "2026-09-29T15:34:31.161379+00:00",
+  "pdf_sha256": "82d64e62145db5cfd140ab359caa53d76f6898c8123cddfc8f1e34b0d883dd93",
+  "page_count": 10,
+  "pages_reviewed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "method": "Poppler page rendering with visual inspection of every page; final pagination rechecked on pages 8 through 10.",
+  "checks": [
+    "readable equations and table",
+    "no clipping or overlap",
+    "consistent page numbers and margins",
+    "no undefined references",
+    "no overfull or underfull boxes",
+    "no em dash in source or extracted PDF"
+  ],
+  "rendered_pages": [
+    {
+      "path": "data/verification/20260929/pdf-qa/page-01.png",
+      "sha256": "0abfa6f271bd2fbc42a0b45c4aa6bda1e11ea4cd23c067f5ffbf29840a721258"
+    },
+    {
+      "path": "data/verification/20260929/pdf-qa/page-02.png",
+      "sha256": "fbc95052f94065675ee0515b79ca3c75c7f28e54f09d672e31df46fde462d370"
+    },
+    {
+      "path": "data/verification/20260929/pdf-qa/page-03.png",
+      "sha256": "1ea6bb1616340d63607a4f7a9672af908eabd5a8c62e2b6a1938bd26bb26b31b"
+    },
+    {
+      "path": "data/verification/20260929/pdf-qa/page-04.png",
+      "sha256": "bc49256c75f9f9a72dba39e3a8571676570f223308d39db742b1118f21d84c2e"
+    },
+    {
+      "path": "data/verification/20260929/pdf-qa/page-05.png",
+      "sha256": "98323dcd290a2f82a94ab5f560ae7224e54aa35694d9b0acfa5b3a18cbbfbc67"
+    },
+    {
+      "path": "data/verification/20260929/pdf-qa/page-06.png",
+      "sha256": "863f3318eb4a5d9c284595464c55d47156bfefa51e9aa2f9e6a9717b3248c420"
+    },
+    {
+      "path": "data/verification/20260929/pdf-qa/page-07.png",
+      "sha256": "535abbfa12bf3c4a26ef4cdeebffcc5aa557f12962ffde87c02488333b8e12b4"
+    },
+    {
+      "path": "data/verification/20260929/pdf-qa/page-08.png",
+      "sha256": "dee18b2485e9324de9f4097cd60f0d882317867ca085c6009585299710f672aa"
+    },
+    {
+      "path": "data/verification/20260929/pdf-qa/page-09.png",
+      "sha256": "2057e1e91bf3128d6d2eb76b3957ea415585faefeccdcfccdcc9339391762410"
+    },
+    {
+      "path": "data/verification/20260929/pdf-qa/page-10.png",
+      "sha256": "f9266f1e5c72aec952a718079b82ac670b077a1b01502319f0c9333567a720d2"
+    }
+  ]
+}

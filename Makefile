@@ -1,23 +1,28 @@
-# BFS-Avoidance Frontier — verification targets
-.PHONY: all verify-python verify-lean audit clean
+# Reproduction and publication checks
+.PHONY: all verify-python verify-lean recompute paper verify-publication release clean
 
 all: verify-python verify-lean
 
-# Exhaustive Python verification of every lemma and theorem (~1 min)
 verify-python:
-	python3 python/verify_theorems.py
+	PYTHONDONTWRITEBYTECODE=1 python3 python/verify_theorems.py
+	PYTHONDONTWRITEBYTECODE=1 python3 python/verify_artifact.py
+	PYTHONDONTWRITEBYTECODE=1 python3 python/verify_parent_dp.py
 
-# Kernel-checked Lean proofs; the build succeeding IS the proof.
-# Prints the axiom audit for all six named theorems.
 verify-lean:
 	cd lean && lake build
 
-# Reproduce the frontier computations (new OEIS terms); see data/raw/
 recompute:
-	python3 python/reference.py ub 10
-	python3 python/reference.py b 11
-	for p in 231 312 321; do python3 python/solver.py ub $$p 12; done
-	for p in 231 312 321; do python3 python/solver.py b $$p 13; done
+	PYTHONDONTWRITEBYTECODE=1 python3 python/verify_artifact.py --full
+
+paper:
+	latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=paper paper/main.tex
+
+verify-publication:
+	python3 release/verify.py
+
+release:
+	python3 release/package.py
 
 clean:
 	rm -rf python/__pycache__ lean/.lake/build
+	latexmk -c -outdir=paper paper/main.tex

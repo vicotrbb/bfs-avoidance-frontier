@@ -1,0 +1,22 @@
+{
+  "scope": "Inputs used by the full artifact recomputation; these files were not changed during that run.",
+  "sha256": {
+    "python/reference.py": "9ccfeadd6612606ca8cffe0cd5af37947f56c9adbb23adfe4b20adf04ca2c0f1",
+    "python/solver.py": "526443f7655890bcfab69e332cadba9cbf992f0c5d5618c91e55be0a4112ab19",
+    "python/parent_words.py": "065c8464510044624a3f811610eb54ae381cf846d844dffc77578b57b456af76",
+    "python/verify_artifact.py": "a8b2807930df8bb3ffee0eadb2d9dd32adc3a8ac05fa6b45d183cb6c98f1825b",
+    "data/raw/b_231.txt": "5869ef7002c5c479f980ae04dc023c71b451e0ddaab932c750f399e1a07bdb8c",
+    "data/raw/b_312.txt": "289d27300447c7383d4eae890f334c8361e23f27b1949ad2febb316de9781379",
+    "data/raw/b_321.txt": "af0881153c6f8ffb79e8908f6849ec0778df7fb1c2c52359293db7f25463a1bf",
+    "data/raw/ub_231.txt": "5c16c21dcb9cf26e6c7873693242829fd09d4006b3fd19777246c8faab03e408",
+    "data/raw/ub_312.txt": "99a17cc981ba0c98a8711af6da8f3f0bba9501694607eba849510c2b7f9afbf3",
+    "data/raw/ub_321.txt": "889d905293a2dad5d21d99f1b6ffc160b95c9c4bd6d2288498ea6b1bbdad8ad2",
+    "oeis-submission/bfiles/b245898.txt": "aa56cef4624fa634dd81cdc003d8239950c657dec347dc3dc5ffa25b3a62c49b",
+    "oeis-submission/bfiles/b245899.txt": "9bce5cf396aea3b5fcd9c6be149a835362900872a56f33765d938194381f43af",
+    "oeis-submission/bfiles/b245900.txt": "452196c2cc842f0bf7cb923567d3f65bd9ae3570450d18fff6e5d0b700194cd9",
+    "oeis-submission/bfiles/b245901.txt": "b76e46124e2d10b36d381ea3415490a8299509400767e68409e97040a55a11b2",
+    "oeis-submission/bfiles/b245902.txt": "60bea6ecb64f88a5ffd094916b5b8994cd9c96198c99e8fbe06fb8716469c6c8",
+    "oeis-submission/bfiles/b245903.txt": "2bde43ca0e469970ace16471b86c82550ab3efd63b2c6be029a91b7efa3fb7ba",
+    "data/certificates/certificate_321_n11.txt": "62fa67238d23807947c12b7620e14ce8fa1693bb517f6723bbb2cb8572189f54"
+  }
+}

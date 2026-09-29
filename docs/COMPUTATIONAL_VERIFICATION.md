@@ -1,84 +1,57 @@
-# Proof of Correctness
+# Computational and formal verification
 
-The claim: the new terms in `../data/raw/` are the true values of
-A245898–A245903 beyond the published data. The proof is by independent
-double computation anchored to the published ground truth.
+This file states what each check establishes. The current paper is the source of the unrestricted mathematical proofs.
 
-## 1. Definitions are pinned to OEIS examples
+## Counting objects
 
-Both programs implement the definition stated in the OEIS entries: count
-distinct permutations (not trees) of `1..n` avoiding the classical pattern
-that occur as level-order (BFS) reading words of increasing trees, where
-"unary-binary" = every node has at most 2 children and "binary" = every
-node has 0 or 2 children (full binary). The full-binary interpretation is
-not assumed — it is *established* by the fact that it reproduces all five
-published terms of each of A245901/2/3 (the alternative "complete binary
-heap" interpretation does not: it undercounts, e.g. only 8 heap words of
-length 5 exist while a(3)=10).
+A word is a distinct permutation, not a labeled tree. Every parent has at most two children in unary-binary mode, and zero or two in full binary mode. Children are ordered and their labels exceed the parent's label. Full binary sequence index r corresponds to word length 2r-1.
 
-## 2. Two independent algorithms
+## Implementations
 
-- `../python/reference.py` — brute force. Recursively constructs every increasing
-  tree of the class level by level (choosing children counts and ordered
-  label assignments per parent), inserts each BFS word into a set, then
-  filters by pattern avoidance with a naive O(n³) triple loop. No shared
-  code or shared ideas with the solver beyond the problem statement.
-- `../python/solver.py` — DFS over permutation prefixes with two prunings:
-  (a) incremental pattern containment; (b) realizability, maintained as a
-  set of configurations (previous-level boundary, current-level boundary,
-  NFA states of the left-to-right parent/child matching). A prefix is
-  extended only if some configuration survives.
+- `python/reference.py` enumerates increasing trees level by level, deduplicates their words, and tests pattern avoidance by ranking triples.
+- `python/solver.py` enumerates permutation prefixes. Its pruning uses incremental pattern containment and a nondeterministic matching state across candidate level boundaries.
+- `python/parent_words.py` recognizes a supplied word by dynamic programming over BFS parent outdegrees. Queue nonemptiness, child capacity, and label inequalities are checked directly. Its pattern predicate uses inequalities rather than triple ranking. It also implements the arbitrary-k full-degree construction and validates the reconstructed BFS traversal.
 
-An agreement between the two on any value is meaningful because they can
-fail only in disjoint ways (set-dedup/tree-generation bugs vs.
-NFA/boundary-transition bugs).
+The first two implementations check different realizability algorithms. Their agreement is corroboration, not a probability estimate for correctness. The third is used for certificates and bounded generalization tests rather than the largest enumeration totals.
 
-## 3. Verification matrix
+## Coverage
 
-All values below computed on this machine (macOS, Python 3, single core,
-July 24 2026). ✓ = both algorithms produce this value; ★ = also equals the
-published OEIS term.
+| Check | Range |
+|---|---|
+| Tree enumeration versus prefix solver | All six classes through word length 11 |
+| Historical baseline | 39 displayed entries: 3 times 8 unary-binary and 3 times 5 full binary |
+| Direct extensions checked by both enumerators | 12 entries through length 11 |
+| Full prefix-solver recomputation | Unary-binary lengths 1 through 14; full binary lengths 1,3,...,15 |
+| Derived extension | A245898(15)=877865, from A245901(8) and Theorem B |
+| Long recurrence b-files | A245899 indices 1 through 1000; A245902 indices 1 through 500 |
+| Exact 321 difference certificate | All 47 words, compared against the reference set difference |
+| Independent certificate recognition | Each retained word: unary-binary accepted, full binary rejected |
+| First parity-failure check | Set equality at odd lengths 1 through 9; inequality at length 11 |
+| Arbitrary-k theorems and construction | Every permutation of lengths 1 through 7, k=2,3,4 |
+| Pattern-predicate cross-check | Every permutation of length 6, all three patterns |
 
-Unary-binary (n = 1..8 published):
-- n=1..8: ✓★ all 24 values (three patterns × eight terms) match OEIS exactly.
-- n=9: 667 / 222 / 753 ✓ (231/312/321) — NEW
-- n=10: 2098 / 544 / 2439 ✓ — NEW
-- n=11: 6788 / 1601 / 8095 ✓ — NEW
-- n≥12: solver only (single-algorithm; flagged as such in ../data/raw/)
+The original `verify_theorems.py` checks the binary heap equality through length 11, the binary 231 equality at lengths 9 and 11, and the recurrence through length 10. It also reports 27,364 odd-extension, 18,677 even-regrouping, and 127,127 promotion instances. These auxiliary instances are drawn from unary-binary-realizable permutations at lengths 8 and 9. The promotion checks have no avoidance filter; they are not an enumeration of all words.
 
-Full binary (length 1..9 published):
-- lengths 1..9: ✓★ all 15 values match OEIS exactly.
-- length 11: 6788 / 1601 / 8048 ✓ — NEW
-- length ≥13: solver only
-
-The probability that two structurally unrelated implementations agree on
-39 independent nontrivial values (including 12 in the previously unknown
-range) while both being wrong in the same way is negligible; any reader
-can re-run both programs in minutes to remove even that doubt.
-
-## 4. The resolved conjecture
-
-Published data showed A245901/2/3(k) = A245898/9/900(2k-1) for all known
-overlapping terms (through length 9). Both algorithms confirm:
-
-- pattern 231: equality continues at lengths 11 (6788) and 13 (74969)
-- pattern 312: equality continues at lengths 11 (1601) and 13 (12416)
-- pattern 321: **equality FAILS at length 11**: unary-binary gives 8095,
-  full binary gives 8048 — a difference of 47 words, each verified by
-  explicit brute-force tree construction (reference.py finds all 8095
-  words as unary-binary BFS words and only 8048 as full-binary BFS words).
-
-Hence "restricting odd-length increasing unary-binary trees to full binary
-trees preserves the set of pattern-avoiding BFS words" is TRUE through the
-published range, FALSE in general (first counterexample: 321, length 11),
-and remains an open (now data-supported) conjecture for 231 and 312.
-
-## 5. Reproduce everything
+## Reproduce
 
 ```sh
-python3 python/reference.py ub 11        # ~20 s: ground truth through n=11
-python3 python/reference.py b 11         # ~5 s: ground truth through length 11
-for p in 231 312 321; do python3 python/solver.py ub $p 11; done   # ~4 s
-for p in 231 312 321; do python3 python/solver.py b  $p 13; done   # ~60 s
+make verify-python
+make verify-lean
+make recompute
+make paper
+make verify-publication
 ```
-Diff the outputs against `../data/raw/` and against the OEIS entries.
+
+For a retained full-computation receipt:
+
+```sh
+python3 python/verify_artifact.py --full --output data/verification/20260929/artifact.json
+```
+
+`verify_artifact.py` exits nonzero on any mismatch and compares every b-file with its declared direct or recurrence source. It reads raw counts rather than silently replacing them. The full table run uses up to four worker processes. Execution dates, Python/platform versions, ranges, and elapsed times appear in the JSON receipt.
+
+## Formal verification
+
+The Lean build uses toolchain 4.24.0 without external dependencies. `Sanity.lean` prints axiom dependencies for the binary encoded and tree-level results, the semantic bridges, and the general parent-sequence results. No admitted proofs or additional axioms are used. General parent constraints and full child fibers are described in `GENERAL_K_FORMALIZATION.md`.
+
+The formal theorems establish structural statements. They do not certify the Python programs, finite enumeration totals, historical annotations, or novelty. Those claims have separate evidence in the computation receipts and source notes.

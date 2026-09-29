@@ -1,22 +1,26 @@
 cff-version: 1.2.0
-message: "If you use these results or this code, please cite this repository."
-title: "BFS-Avoidance Frontier: Rigidity Theorems for Pattern-Avoiding BFS Words of Increasing Trees"
+message: "Please cite the paper and the versioned artifact used."
+type: article
+title: "Rigidity of Pattern-Avoiding Breadth-First Reading Words of Increasing Trees"
 authors:
   - family-names: "Bona"
     given-names: "Victor"
-date-released: "2026-07-24"
-version: "1.0.0"
+    affiliation: "Independent Researcher, Blumenau, Brazil"
+date-released: "2026-09-29"
+version: "1.1.0"
+url: "https://github.com/vicotrbb/bfs-avoidance-frontier"
+repository-code: "https://github.com/vicotrbb/bfs-avoidance-frontier"
 keywords:
   - enumerative combinatorics
   - pattern avoidance
   - increasing trees
-  - binary heaps
+  - k-ary heaps
+  - breadth-first search
   - OEIS
   - Lean 4
-  - formal verification
-license: MIT
+license: CC-BY-4.0
 abstract: >
-  Two rigidity theorems about breadth-first-search reading words of
-  increasing trees, resolving three conjectures recorded in the OEIS
-  (A245898-A245903, A246747), with prose proofs, exhaustive computational
-  verification, and complete machine-checked formalizations in Lean 4.
+  For every branching bound k, 312-avoiding BFS realizability collapses to
+  the complete k-ary heap shape, and 231-avoiding words of length 1 modulo
+  k admit full k-ary realizations. Parent-sequence proofs yield binary OEIS
+  identities, supported by formal proofs and reproducible enumeration.

@@ -93,7 +93,7 @@ theorem chain_S : ∀ {ls : List (List Nat)} {J D : List Nat},
 
 /-- **Promotion cascade (T+)**: if the suffix `x :: rest` is realizable
 below `prev`, then `rest` is realizable below `prev ++ [x]`, with strictly
-smaller total depth.  Holds for every word — no pattern condition. -/
+smaller total depth.  Holds for every word ; no pattern condition. -/
 theorem chain_plus {prev : List Nat} {ls : List (List Nat)} {x : Nat}
     {rest : List Nat} (hc : Chain prev ls) (hflat : ls.flatten = x :: rest) :
     ∃ ls', Chain (prev ++ [x]) ls' ∧ ls'.flatten = rest ∧

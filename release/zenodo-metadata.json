@@ -1,0 +1,13 @@
+{
+  "title": "Rigidity of Pattern-Avoiding Breadth-First Reading Words of Increasing Trees",
+  "resource_type": "Preprint",
+  "publication_date": "2026-09-29",
+  "version": "1.1.0",
+  "creators": [{"family_name": "Bona", "given_name": "Victor", "affiliation": "Independent Researcher, Blumenau, Brazil"}],
+  "description": "We study permutations obtained by reading increasing ordered trees in breadth-first order. For every integer k >= 2, a 312-avoiding permutation is realizable on a tree of maximum outdegree k if and only if it is realizable on the complete k-ary heap shape. A 231-avoiding permutation of length congruent to 1 modulo k is realizable with maximum outdegree k if and only if it is realizable on a full k-ary tree. Both proofs use the nondecreasing sequence of BFS parent positions. The binary specializations prove three identities between OEIS sequences, including A245899 = A246747. For 321, heap collapse first fails at length 4, while full binary collapse first fails at odd length 11, with 8095 unary-binary words and 8048 full binary words. The artifact supplies 28 additional sequence entries relative to the recorded baseline, the complete 47-word counterexample set, executable enumeration and verification programs, and Lean 4 proofs. The binary results are formalized on inductive trees; the arbitrary-k arguments are formalized over parent sequences. Exponential growth rate 4 follows from Defant's heap-growth theorem.\n\nThe complete source, data, formalization, certificates, and verification receipts are available in the linked GitHub release v1.1.0. The manuscript acknowledges assistance from Claude and Codex. This record contains the complete article PDF under CC BY 4.0.",
+  "keywords": ["enumerative combinatorics", "permutation patterns", "increasing trees", "breadth-first search", "k-ary heaps", "OEIS", "Lean 4", "formal verification", "reproducibility"],
+  "language": "English",
+  "license": "CC-BY-4.0",
+  "related_artifact": "https://github.com/vicotrbb/bfs-avoidance-frontier/releases/tag/v1.1.0",
+  "file": "bfs-avoidance-frontier-v1.1.0.pdf"
+}

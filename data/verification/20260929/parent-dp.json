@@ -1,0 +1,283 @@
+{
+  "status": "pass",
+  "checked_at_utc": "2026-09-29T15:21:04.141704+00:00",
+  "python": "3.14.6",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "seconds": 0.547,
+  "oracle": "direct exhaustive nondecreasing parent-map enumeration",
+  "lengths": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "branching_bounds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "modes": [
+    "bounded",
+    "full"
+  ],
+  "comparisons": 47304,
+  "witnesses_verified": 1874,
+  "cases": [
+    {
+      "n": 1,
+      "k": 1,
+      "comparisons": 2,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 1,
+      "k": 2,
+      "comparisons": 2,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 1,
+      "k": 3,
+      "comparisons": 2,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 1,
+      "k": 4,
+      "comparisons": 2,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 2,
+      "k": 1,
+      "comparisons": 4,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 2,
+      "k": 2,
+      "comparisons": 4,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 2,
+      "k": 3,
+      "comparisons": 4,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 2,
+      "k": 4,
+      "comparisons": 4,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 3,
+      "k": 1,
+      "comparisons": 12,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 3,
+      "k": 2,
+      "comparisons": 12,
+      "bounded_parent_maps": 2,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 2,
+      "full_realizable_words": 2
+    },
+    {
+      "n": 3,
+      "k": 3,
+      "comparisons": 12,
+      "bounded_parent_maps": 2,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 2,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 3,
+      "k": 4,
+      "comparisons": 12,
+      "bounded_parent_maps": 2,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 2,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 4,
+      "k": 1,
+      "comparisons": 48,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 4,
+      "k": 2,
+      "comparisons": 48,
+      "bounded_parent_maps": 4,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 4,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 4,
+      "k": 3,
+      "comparisons": 48,
+      "bounded_parent_maps": 5,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 6,
+      "full_realizable_words": 6
+    },
+    {
+      "n": 4,
+      "k": 4,
+      "comparisons": 48,
+      "bounded_parent_maps": 5,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 6,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 5,
+      "k": 1,
+      "comparisons": 240,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 5,
+      "k": 2,
+      "comparisons": 240,
+      "bounded_parent_maps": 9,
+      "full_parent_maps": 2,
+      "bounded_realizable_words": 12,
+      "full_realizable_words": 12
+    },
+    {
+      "n": 5,
+      "k": 3,
+      "comparisons": 240,
+      "bounded_parent_maps": 13,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 18,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 5,
+      "k": 4,
+      "comparisons": 240,
+      "bounded_parent_maps": 14,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 24,
+      "full_realizable_words": 24
+    },
+    {
+      "n": 6,
+      "k": 1,
+      "comparisons": 1440,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 6,
+      "k": 2,
+      "comparisons": 1440,
+      "bounded_parent_maps": 21,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 39,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 6,
+      "k": 3,
+      "comparisons": 1440,
+      "bounded_parent_maps": 36,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 72,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 6,
+      "k": 4,
+      "comparisons": 1440,
+      "bounded_parent_maps": 41,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 96,
+      "full_realizable_words": 0
+    },
+    {
+      "n": 7,
+      "k": 1,
+      "comparisons": 10080,
+      "bounded_parent_maps": 1,
+      "full_parent_maps": 1,
+      "bounded_realizable_words": 1,
+      "full_realizable_words": 1
+    },
+    {
+      "n": 7,
+      "k": 2,
+      "comparisons": 10080,
+      "bounded_parent_maps": 51,
+      "full_parent_maps": 5,
+      "bounded_realizable_words": 164,
+      "full_realizable_words": 160
+    },
+    {
+      "n": 7,
+      "k": 3,
+      "comparisons": 10080,
+      "bounded_parent_maps": 104,
+      "full_parent_maps": 3,
+      "bounded_realizable_words": 360,
+      "full_realizable_words": 360
+    },
+    {
+      "n": 7,
+      "k": 4,
+      "comparisons": 10080,
+      "bounded_parent_maps": 125,
+      "full_parent_maps": 0,
+      "bounded_realizable_words": 480,
+      "full_realizable_words": 0
+    }
+  ]
+}

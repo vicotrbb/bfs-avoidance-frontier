@@ -1,0 +1,6 @@
+Theorem A verified (n<=11)
+Lemma B3 instances: 27364, B4: 18677, B5: 127127
+Theorem B verified (n=9,11)
+Sharpness verified (8095/8048, 47 witnesses)
+Recurrence identity verified (n<=10)
+ALL CHECKS PASSED

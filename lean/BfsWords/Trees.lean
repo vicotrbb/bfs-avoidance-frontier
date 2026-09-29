@@ -2,14 +2,14 @@
 Closing the semantic gap: actual rooted plane trees.
 
 `UBWord`/`BWord` (Defs.lean) encode realizability via level blocks and
-matchings.  Here we define honest trees — an inductive type with labels and
-ordered children lists — together with:
+matchings.  Here we define honest trees ; an inductive type with labels and
+ordered children lists ; together with:
 
 * `Inc t`  : every child's label exceeds its parent's label (increasing);
 * `UB t`   : every node has at most 2 children (unary-binary);
 * `FB t`   : every node has 0 or 2 children (full binary);
 * `levelOrder F` : the reading word of a forest, level by level, left to
-  right — verbatim the definition in OEIS A245898–A245903 ("reading the
+  right ; verbatim the definition in OEIS A245898–A245903 ("reading the
   tree left to right by levels, starting with the root").
 
 Main results (proved below):

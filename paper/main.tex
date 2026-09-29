@@ -1,5 +1,4 @@
 \documentclass[11pt]{article}
-
 \usepackage[margin=1.1in]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{microtype}
@@ -7,14 +6,9 @@
 \usepackage{booktabs}
 \usepackage{tikz}
 \usetikzlibrary{trees}
+\usepackage{xurl}
 \usepackage[hidelinks]{hyperref}
-\hypersetup{
-  pdftitle={Rigidity of Pattern-Avoiding Breadth-First Reading Words of Increasing Trees},
-  pdfauthor={Victor Bona},
-  pdfsubject={Enumerative combinatorics; pattern avoidance in labeled trees},
-  pdfkeywords={pattern avoidance, increasing trees, binary heaps, breadth-first search, OEIS, Lean}
-}
-
+\hypersetup{pdftitle={Rigidity of Pattern-Avoiding Breadth-First Reading Words of Increasing Trees},pdfauthor={Victor Bona},pdfsubject={Enumerative combinatorics; pattern avoidance in ordered trees},pdfkeywords={pattern avoidance, increasing trees, k-ary heaps, breadth-first search, OEIS, Lean}}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
@@ -23,363 +17,307 @@
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
 \newtheorem{question}[theorem]{Question}
-
 \newcommand{\Av}{\operatorname{Av}}
-\newcommand{\UB}{\mathrm{UB}}
-\newcommand{\FB}{\mathrm{FB}}
+\newcommand{\UB}{\mathcal U}
+\newcommand{\FB}{\mathcal F}
+\newcommand{\HP}{\mathcal H}
 \newcommand{\bfs}{\operatorname{bfs}}
 \newcommand{\seq}[1]{\href{https://oeis.org/#1}{\texttt{#1}}}
-
 \title{Rigidity of Pattern-Avoiding Breadth-First Reading Words\\ of Increasing Trees}
-\author{Victor Bona\\[2pt]
-\small Independent Researcher, Blumenau, Brazil\\
-\small \texttt{victor.bona@hotmail.com}}
-\date{July 2026}
-
+\author{Victor Bona\\[2pt]\small Independent Researcher, Blumenau, Brazil\\\small\texttt{victor.bona@hotmail.com}}
+\date{September 2026}
 \begin{document}
-
 \maketitle
 
 \begin{abstract}
-An increasing tree on $n$ nodes carries the labels $1,\dots,n$ so that every child exceeds its parent, and its breadth-first reading word is the permutation obtained by reading labels level by level from left to right. Levin, Pudwell, Riehl, and Sandberg introduced the enumeration of permutations that avoid a classical pattern of length three and arise as such reading words; six OEIS sequences record the counts for unary-binary and full binary trees against the patterns $231$, $312$, and $321$, and all six had remained unextended since 2014. We prove two rigidity theorems. First, a $312$-avoiding permutation is the breadth-first reading word of some increasing unary-binary tree if and only if it satisfies the binary-heap inequality $w_{\lfloor i/2\rfloor} < w_i$; realizability over the infinite family of admissible shapes collapses to a single shape, and the resulting equality of sequences \seq{A245899} and \seq{A246747}, conjectured in the OEIS, holds with the identity map as the bijection. Second, every $231$-avoiding reading word of odd length realizable on an increasing unary-binary tree is realizable on an increasing full binary tree, which proves $\seq{A245901}(k)=\seq{A245898}(2k-1)$. Both collapses fail for the pattern $321$, and we exhibit the minimal counterexamples. The central technical ingredient is a promotion cascade lemma that holds for all words with no pattern hypothesis: enlarging a breadth-first level by the next element never destroys realizability of the remaining suffix. Pattern avoidance enters at exactly one parity-driven step, which is precisely where $321$ breaks. We also extend the six sequences by 28 new terms. All results are verified three ways: by self-contained proofs, by exhaustive computation, and by complete machine-checked formalizations in Lean 4 whose statements quantify over genuine inductive trees.
+We study permutations obtained by reading increasing ordered trees in breadth-first order. For every integer $k\ge2$, we prove two structural results. A $312$-avoiding permutation is realizable on a tree of maximum outdegree $k$ if and only if it is realizable on the complete $k$-ary heap shape. A $231$-avoiding permutation of length congruent to $1$ modulo $k$ is realizable on a tree of maximum outdegree $k$ if and only if it is realizable on a full $k$-ary tree. Both proofs use the nondecreasing sequence of parent positions in breadth-first order. The first follows from a capacity inequality; the second groups nonroot positions into blocks of $k$ and preserves their labels by a pattern-forced inequality. For binary trees these results prove three identities between OEIS sequences, including the conjectured equality of \seq{A245899} and \seq{A246747}. The analogous heap collapse for $321$ fails first at length $4$, whereas full binary realizability first diverges at odd length $11$, with $8095$ unary-binary words and $8048$ full binary words. We provide $28$ additional sequence entries relative to the recorded baseline, computation programs, and the complete set of $47$ counterexamples. The binary tree-level results and the general parent-sequence arguments are verified in Lean~4. We also deduce exponential growth rate $4$ for all three patterns from Defant's heap-growth theorem.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
 
-Pattern avoidance began with Knuth's analysis of stack-sortable permutations \cite{Knuth1997} and has since become a central topic in enumerative combinatorics \cite{Bona2012,Kitaev2011}. A recurring modern theme replaces the ambient set $S_n$ with the image of a combinatorial family under a reading map: one fixes a class of labeled structures, reads each structure into a permutation, and asks how many of the resulting permutations avoid a given pattern. Levin, Pudwell, Riehl, and Sandberg carried out this program for $k$-ary heaps read in breadth-first order \cite{LPRS2016}, and Defant later settled their growth-rate conjecture for $321$-avoiding binary heaps \cite{Defant2019}. Related reading-word problems appear for linear extensions of forests and rectangular posets \cite{AERRSV2016,Defant2019} and for increasing unary-binary trees with an associated permutation avoiding $213$, which are in bijection with basketball walks \cite{BFMR2017}.
+Pattern avoidance in permutations, originating in the study of stack sorting, provides a framework for counting combinatorial objects subject to relative-order restrictions \cite{Knuth1997,Bona2012,Kitaev2011}. A reading map transfers these restrictions to labeled structures: one orders their vertices, reads the labels, and requires the resulting permutation to avoid a fixed pattern. Levin, Pudwell, Riehl, and Sandberg studied this question for complete $k$-ary heaps \cite{LPRS2016}. Related work considers linear extensions of posets \cite{AERRSV2016,Defant2019} and increasing unary-binary trees whose breadth-first words avoid $213$ \cite{BFMR2017}.
 
-This paper concerns the breadth-first reading words themselves. An \emph{increasing tree} on $n$ nodes is a rooted plane tree whose nodes carry the labels $1,\dots,n$, each child labeled with a larger value than its parent. Reading the labels level by level, left to right, produces the \emph{breadth-first reading word}, a permutation of $\{1,\dots,n\}$ that necessarily begins with $1$. Following \cite{LPRS2016}, six OEIS \cite{OEIS} sequences count the permutations that avoid a single classical pattern of length three and occur as reading words: \seq{A245898}, \seq{A245899}, and \seq{A245900} for increasing unary-binary trees (every node has at most two children) against the patterns $231$, $312$, and $321$, and \seq{A245901}, \seq{A245902}, and \seq{A245903} for increasing full binary trees (every node has zero or two children), whose words have odd length. All six entries carried the keyword \texttt{more}, requesting extension, and none had gained a term since their creation in 2014. Two further statements sat in the margins of the database as recorded observations rather than theorems. The entry \seq{A246747}, which counts binary heaps on $n$ elements whose reading word avoids $312$, carried the note that it may equal \seq{A245899}, and the data of the full binary sequences agreed with the odd-indexed terms of their unary-binary counterparts as far as either had been computed.
+This paper counts distinct reading words across a family of tree shapes. An increasing ordered tree has distinct labels $1,\ldots,n$, with every child larger than its parent, and the children of each vertex are ordered. Its breadth-first word lists the labels level by level, from left to right. Different labeled trees can produce the same word. Consequently, counting these words is a different problem from counting trees, and an equality of word sets is stronger than an equality of their cardinalities.
 
-We resolve these questions completely for the patterns $231$ and $312$, and we show that both phenomena genuinely depend on the pattern by exhibiting explicit counterexamples for $321$.
+For a pattern $\tau$, let $\UB_n^{(k)}(\tau)$ denote the set of $\tau$-avoiding words realizable on increasing ordered trees of maximum outdegree $k$. Let $\FB_n^{(k)}(\tau)$ denote the corresponding set for full $k$-ary trees, in which each outdegree is $0$ or $k$, and let $\HP_n^{(k)}(\tau)$ denote the words on the complete $k$-ary heap shape. Our main results are
+\begin{align}
+\UB_n^{(k)}(312)&=\HP_n^{(k)}(312),\label{eq:introA}\\
+\UB_n^{(k)}(231)&=\FB_n^{(k)}(231)\qquad(n\equiv1\pmod{k}).\label{eq:introB}
+\end{align}
+The first equality replaces a union over admissible shapes with one prescribed shape. The second replaces a degree bound with an exact degree condition at every internal vertex. Neither asserts uniqueness of an original realization.
 
-Our first theorem is a rigidity statement. Among all increasing unary-binary trees on $n$ nodes there are exponentially many shapes, and a priori a permutation could be realizable as a reading word on some exotic shape only. For $312$-avoiding permutations this freedom is illusory.
+The common proof device is the parent sequence. Number vertices by their positions in the breadth-first traversal. The parents of positions $2,\ldots,n$ form a nondecreasing sequence in which each index occurs at most $k$ times. This representation gives a short capacity argument for \eqref{eq:introA} and an explicit block construction for \eqref{eq:introB}. Both transformations preserve the word itself. Given a realization, the second construction takes linear time.
 
-\begin{theorem}[Heap collapse; Theorem~\ref{thm:A} below]
-A $312$-avoiding permutation $w$ of $\{1,\dots,n\}$ is the breadth-first reading word of an increasing unary-binary tree if and only if $w_{\lfloor i/2\rfloor} < w_i$ for all $2 \le i \le n$, that is, if and only if $w$ is the array of a binary heap.
-\end{theorem}
+The binary specializations concern six word-counting sequences recorded in the OEIS: \seq{A245898}, \seq{A245899}, and \seq{A245900} for unary-binary trees and patterns $231$, $312$, and $321$, and \seq{A245901}, \seq{A245902}, and \seq{A245903} for full binary trees \cite{OEIS}. The entry \seq{A246747} counts complete binary heaps avoiding $231$ and, equivalently, $312$; its recorded tentative equality with \seq{A245899} follows from \eqref{eq:introA}. The two full binary identities follow from \eqref{eq:introA} and \eqref{eq:introB}. We distinguish these proofs from their historical annotations: the OEIS records use tentative language for the $312$ relationships, whereas the $231$ odd-index relationship is stated affirmatively without a proof on the entry page.
 
-Since a heap on a fixed shape is determined by its reading word, the theorem identifies the $312$-avoiding reading words of unary-binary trees with the $312$-avoiding heaps of \cite{LPRS2016}: the conjectured equality $\seq{A245899}(n) = \seq{A246747}(n)$ holds for all $n$, and the bijection realizing it is the identity map on words. The complete shape on an odd number of nodes has no node with exactly one child, so the same theorem yields $\seq{A245902}(k) = \seq{A245899}(2k-1)$: for $312$-avoiding words of odd length, the unary-binary, full binary, and heap realizability notions coincide. Through the recurrence of \seq{A246747}, the sequence \seq{A245899} acquires the closed description
-\[
-a(n) \;=\; \sum_{i=0}^{\lfloor (n-1)/2\rfloor} C_i \, a(n-i-1), \qquad a(0)=1,
-\]
-with $C_i$ the $i$-th Catalan number.
+The $321$ pattern separates the two conclusions. The heap condition already fails for the realizable word $1423$. Full binary realizability agrees with unary-binary realizability at odd lengths through $9$, but fails at length $11$. We give a direct obstruction for one word and an exhaustive computation of all $47$ missing words. We also extend the recorded sequence data and determine the exponential growth rate by applying the general theorem of Defant \cite{Defant2019}. A pattern-free promotion lemma, useful in the original binary proof, is retained as a separate exchange principle in Appendix~\ref{sec:cascade}.
 
-Our second theorem is a parity statement for the pattern $231$, where no single-shape collapse holds.
+\section{Words, trees, and parent sequences}\label{sec:prelim}
 
-\begin{theorem}[Parity collapse; Theorem~\ref{thm:B} below]
-Every $231$-avoiding permutation of odd length that is the breadth-first reading word of an increasing unary-binary tree is also the breadth-first reading word of an increasing full binary tree. Consequently $\seq{A245901}(k) = \seq{A245898}(2k-1)$ for all $k$.
-\end{theorem}
+Write $[n]=\{1,\ldots,n\}$, where $n\ge1$, and let $w=w_1\cdots w_n$ be a permutation of $[n]$. An occurrence of $231$ consists of positions $a<b<c$ with $w_c<w_a<w_b$; an occurrence of $312$ has $w_b<w_c<w_a$; an occurrence of $321$ has $w_c<w_b<w_a$. A word avoids a pattern when it has no such occurrence. We use $\Av_n(\tau)$ for the corresponding avoidance class.
 
-Both theorems are sharp in the pattern. For $321$ the corresponding identity fails at the first length beyond the previously published data: among $321$-avoiding words of length $11$ there are $8095$ unary-binary reading words and only $8048$ full binary reading words, and the $47$ missing words are listed explicitly in the repository accompanying this paper.
+A rooted ordered tree is increasing if the labels increase along every parent-child edge. Its root then has label $1$. Throughout, $k\ge2$ is an integer. Maximum outdegree $k$ means that every vertex has at most $k$ children; full $k$-ary means that every vertex has either zero or exactly $k$ children. A full $k$-ary tree with $m$ internal vertices has $km$ edges and hence $km+1$ vertices. Its size is therefore congruent to $1$ modulo $k$.
 
-The proofs share a two-part architecture that we believe is of independent interest. Realizability of a word is a property of its partition into breadth-first levels together with an order-preserving assignment of children to parents. The first part of each proof canonicalizes the assignment within a fixed partition: for $312$ the balanced assignment always works (Lemma~\ref{lem:balanced}), while for $231$ an odd level can always absorb the next element of the word (Lemma~\ref{lem:B3}). The second part reshapes the partition itself, and here the key tool is a lemma with no pattern hypothesis at all.
+The complete $k$-ary shape fills each level from left to right before starting the next. In one-based breadth-first indexing its parent map is
+\begin{equation}
+q_k(i)=\left\lceil\frac{i-1}{k}\right\rceil,\qquad 2\le i\le n.\label{eq:heap}
+\end{equation}
+A permutation labels this shape increasingly exactly when $w_{q_k(i)}<w_i$ for every nonroot position. For $k=2$, $q_2(i)=\lfloor i/2\rfloor$. The complete shape is full $k$-ary when $n\equiv1\pmod{k}$.
 
-\begin{lemma}[Promotion cascade; Lemma~\ref{lem:cascade} below]
-Let $w$ be any word. If the suffix of $w$ beginning with an element $x$ can be arranged into breadth-first levels below a previous level $P$, then the suffix with $x$ removed can be arranged into levels below $P$ extended by $x$, and the total depth strictly decreases.
-\end{lemma}
+\begin{definition}
+A parent sequence on $[n]$ is a sequence $(p_2,\ldots,p_n)$ satisfying $1\le p_i<i$ and $p_i\le p_{i+1}$. Its capacity is at most $k$ if each index occurs at most $k$ times. It is full of order $k$ if every occurring index occurs exactly $k$ times. It is compatible with $w$ if $w_{p_i}<w_i$ for all $i\ge2$.
+\end{definition}
 
-The cascade moves $x$ up into the parent level and lets the old children of $x$ ride along one level upward, each promoted node keeping its original parent. No new comparison between labels is ever created, which is why no pattern condition is needed. Pattern avoidance is consumed at exactly one point in the whole development, the parity step of Lemma~\ref{lem:B3}, and the failure of that single step for $321$ is what makes the counterexamples possible.
-
-Every result in this paper is verified three ways. The proofs below are self-contained. An exhaustive computation checks every lemma on all instances at small sizes, some three hundred thousand cases in total, and reproduces all thirty-six previously published terms of the six sequences by two independent algorithms. Finally, both theorems are formalized in Lean 4 \cite{Lean4}; the formal statements quantify over an inductive type of genuine rooted labeled trees, the development contains no unproven assumptions, and the kernel certifies both theorems from Lean's standard axioms. The formalization effort also simplified the informal proofs, and the versions printed here incorporate those simplifications. Code, data, certificates, and the Lean development are available in the accompanying repository.\footnote{\url{https://github.com/vicotrbb/bfs-avoidance-frontier}}
-
-The paper is organized as follows. Section~\ref{sec:prelim} fixes definitions and the level-matching formulation of realizability. Section~\ref{sec:A} proves the heap collapse. Section~\ref{sec:B} develops the promotion cascade and proves the parity collapse. Section~\ref{sec:sharp} discusses sharpness at $321$ and reports the new terms. Section~\ref{sec:verify} describes the computational and formal verification. Section~\ref{sec:open} collects open problems.
-
-\section{Preliminaries}\label{sec:prelim}
-
-We write $[n] = \{1,\dots,n\}$ and use one-line notation $w = w_1 w_2 \cdots w_n$ for permutations. A permutation $w$ \emph{contains} the pattern $\tau \in S_3$ if some subsequence of $w$ is order-isomorphic to $\tau$, and \emph{avoids} $\tau$ otherwise. We write $\Av_n(\tau)$ for the set of $\tau$-avoiding permutations of $[n]$. Three instances of containment recur throughout, and we spell them out once: an occurrence of $231$ is a triple of positions $i<j<l$ with $w_l < w_i < w_j$, an occurrence of $312$ is a triple with $w_j < w_l < w_i$, and an occurrence of $321$ is a decreasing triple $w_i > w_j > w_l$.
-
-All trees are rooted and plane, meaning that the children of every node are linearly ordered. An \emph{increasing tree} on $n$ nodes is such a tree with labels $1,\dots,n$, bijectively assigned, in which every child's label exceeds its parent's label; the root is therefore labeled $1$. A tree is \emph{unary-binary} if every node has at most two children and \emph{full binary} if every node has zero or two children. The \emph{breadth-first reading word} $\bfs(T)$ lists the labels of $T$ level by level, left to right, starting with the root. Figure~\ref{fig:tree} shows an example. We write $\UB_n(\tau)$ for the set of words in $\Av_n(\tau)$ realizable on increasing unary-binary trees and $\FB_n(\tau)$ for those realizable on increasing full binary trees. A full binary tree on $n$ nodes exists only for odd $n$, and since every full binary tree is unary-binary we have $\FB_n(\tau) \subseteq \UB_n(\tau)$.
-
-\begin{figure}[ht]
-\centering
-\begin{tikzpicture}[level distance=9mm,
-  level 1/.style={sibling distance=22mm},
-  level 2/.style={sibling distance=11mm},
-  every node/.style={circle,draw,inner sep=1.6pt,minimum size=5.5mm}]
-\node {1}
-  child {node {4}
-    child {node {5}}}
-  child {node {2}
-    child {node {3}}};
-\end{tikzpicture}
-\qquad\qquad
-\begin{tikzpicture}[level distance=9mm,
-  level 1/.style={sibling distance=22mm},
-  level 2/.style={sibling distance=11mm},
-  every node/.style={circle,draw,inner sep=1.6pt,minimum size=5.5mm}]
-\node {1}
-  child {node {2}
-    child {node {4}}
-    child {node {5}}}
-  child {node {3}};
-\end{tikzpicture}
-\caption{Two increasing unary-binary trees. The left tree has reading word $14253$; the right tree is the complete (heap) shape on five nodes and has reading word $12345$. The word $14253$ contains $312$ (as the subsequence $4\,2\,3$) and indeed violates the heap inequality at position $5$.}
-\label{fig:tree}
-\end{figure}
-
-Realizability is conveniently phrased without trees. A \emph{level partition} of $w$ cuts its positions into consecutive nonempty blocks $L_0, L_1, \dots, L_m$ with $L_0$ the single first position. A \emph{matching} between an adjacent pair $(P, C)$, where $P = (p_1,\dots,p_M)$ lists the values of a block and $C = (c_1,\dots,c_K)$ those of the next block, is a partition of $C$ into consecutive, possibly empty groups $g_1, \dots, g_M$, one per parent in order, such that every group has size at most two and every member of $g_t$ exceeds $p_t$. For full binary trees each group must have size zero or two. Unwinding the definitions gives the following equivalence, which we record for later use; in the Lean development it is a proved theorem connecting the matching formulation to an inductive type of trees.
-
-\begin{proposition}\label{prop:levels}
-A permutation $w$ is the breadth-first reading word of an increasing unary-binary tree if and only if $w$ admits a level partition with a valid matching between every adjacent pair of blocks, and likewise for full binary trees with groups of size zero or two.
+\begin{proposition}[Parent-sequence representation]\label{prop:parents}
+A permutation $w$ is a breadth-first word of an increasing ordered tree of maximum outdegree $k$ if and only if it has a compatible parent sequence of capacity at most $k$. The same equivalence holds between full $k$-ary trees and compatible full parent sequences of order $k$.
 \end{proposition}
-
-Two closure properties of matchings are immediate and will be used silently: removing the first element of the child block preserves validity (its group shrinks), and appending a new parent at the end of the parent block together with a final group of new children preserves validity. Summing group sizes gives the capacity bound $|C| \le 2|P|$.
-
-Finally, since blocks of a level partition are contiguous in $w$, any elements drawn from distinct blocks appear in $w$ in block order, so pattern conditions on $w$ restrict the relative values across blocks. This is the only mechanism through which avoidance enters the proofs.
-
-\section{The heap collapse for 312}\label{sec:A}
-
-Throughout this section $w$ avoids $312$. The direction from heaps to trees is immediate: the complete shape, in which position $i$ has children at positions $2i$ and $2i+1$, is unary-binary, and the heap inequality makes its labeling increasing. The substance is the converse, and it rests on a canonicalization of matchings.
-
-\begin{lemma}[Balanced matching]\label{lem:balanced}
-Let $(P, C)$ be an adjacent pair of blocks of a $312$-avoiding word admitting a valid matching. Then the balanced matching, which assigns child $c_j$ to parent $p_{\lceil j/2 \rceil}$, is valid: $c_j > p_{\lceil j/2\rceil}$ for all $j$.
-\end{lemma}
-
 \begin{proof}
-Fix a valid matching $\varphi$ and write $t = \lceil j/2\rceil$. Groups have size at most two, so the first $j$ children occupy at least $t$ parents and $\varphi(j) \ge t$. If $\varphi(j) = t$ then $c_j > p_t$ directly. Otherwise $\varphi(j) > t$ and $c_j > p_{\varphi(j)}$. Suppose $c_j < p_t$. Then $p_{\varphi(j)} < c_j < p_t$, while the positions of $p_t$, $p_{\varphi(j)}$, $c_j$ in $w$ are increasing. This triple is an occurrence of $312$, a contradiction. Since labels are distinct, $c_j > p_t$.
+In a breadth-first traversal, the children of each parent form a consecutive block, and the blocks occur in parent order. Thus parent indices are nondecreasing. Each parent precedes its children, its multiplicity is its outdegree, and an increasing labeling gives compatibility.
+
+Conversely, attach vertex $i$ to vertex $p_i$, ordering children by their indices. Every parent index is smaller than its child index, so repeatedly following parents reaches vertex $1$. These edges define a rooted ordered tree. To check its breadth-first order, start a queue with vertex $1$ and append the children of each removed vertex. Nondecreasing parent indices ensure that the concatenation of these child blocks is exactly $2,\ldots,n$. More explicitly, when vertex $j$ is next, every vertex of index at most $j$ has already been enqueued, since its parent has smaller index; the pending indices and subsequent child blocks remain increasing. Induction therefore gives the traversal $1,\ldots,n$. Multiplicities give the required degree condition, and compatibility gives the increasing labeling.
+\end{proof}
+
+The distinction between words and trees is already visible at five vertices. The word $12435$ has the unary-binary realization with levels $(1),(2,4),(3,5)$ and edges $2\to3$, $4\to5$ between the last two levels. It also has a full binary realization with the same levels in which both $3$ and $5$ are children of $2$. The word is counted once in either word class.
+
+\section{Heap collapse for 312}\label{sec:A}
+
+\begin{lemma}[Capacity bound]\label{lem:capacity}
+For a parent sequence of capacity at most $k$, one has $q_k(i)\le p_i$ for every $i\ge2$.
+\end{lemma}
+\begin{proof}
+By monotonicity, the $i-1$ entries $p_2,\ldots,p_i$ all belong to $[p_i]$. Each possible value occurs at most $k$ times, so $i-1\le kp_i$. Taking a ceiling gives the result.
 \end{proof}
 
 \begin{theorem}[Heap collapse]\label{thm:A}
-Let $w \in \Av_n(312)$. Then $w$ is the breadth-first reading word of an increasing unary-binary tree if and only if
-$w_{\lfloor i/2 \rfloor} < w_i$ for all $2 \le i \le n$.
+For every $k\ge2$ and $n\ge1$,
+\[
+\UB_n^{(k)}(312)=\HP_n^{(k)}(312).
+\]
+Equivalently, a $312$-avoiding permutation is realizable with maximum outdegree $k$ if and only if $w_{q_k(i)}<w_i$ for every $2\le i\le n$.
 \end{theorem}
-
 \begin{proof}
-Only the forward direction remains. Fix a realization of $w$ with level sizes $n_0 = 1, n_1, \dots, n_m$ and, by Lemma~\ref{lem:balanced}, balanced matchings throughout. Let $s_j = 1 + \sum_{t < j} n_t$ denote the $1$-indexed starting position of level $j$.
-
-We first claim $s_{j} \le 2 s_{j-1}$ for all $j \ge 1$. Equivalently, writing $d_j = s_{j+1} - 2s_j = n_j - s_j$, we must show $d_{j-1} \le 0$. The capacity bound gives $n_j \le 2 n_{j-1}$, and therefore
-\[
-d_j \;=\; n_j - s_j \;\le\; 2n_{j-1} - (s_{j-1} + n_{j-1}) \;=\; n_{j-1} - s_{j-1} \;=\; d_{j-1},
-\]
-so the quantity $d_j$ is nonincreasing, and $d_0 = n_0 - s_0 = 1 - 1 = 0$.
-
-Now fix a position $p \ge 2$, lying in level $j$ at local offset $k = p - s_j \ge 0$, and let $q = \lfloor p/2 \rfloor$ be its heap parent. Under the balanced matching the tree parent of $p$ sits at position
-$b = s_{j-1} + \lfloor k/2 \rfloor$,
-and $w_b < w_p$. Monotonicity of the floor together with $s_j \le 2 s_{j-1}$ gives
-\[
-q \;=\; \Big\lfloor \tfrac{s_j + k}{2} \Big\rfloor \;\le\; \Big\lfloor \tfrac{2 s_{j-1} + k}{2} \Big\rfloor \;=\; s_{j-1} + \Big\lfloor \tfrac{k}{2} \Big\rfloor \;=\; b,
-\]
-and clearly $b < p$. If $q = b$ we are done. If $q < b$, suppose $w_q > w_p$. Then the values at the increasing positions $q < b < p$ satisfy $w_b < w_p < w_q$, an occurrence of $312$. Hence $w_q < w_p$, as labels are distinct.
+The complete heap shape has maximum outdegree $k$, so the reverse inclusion is immediate. For the forward inclusion, take a compatible parent sequence and fix $i\ge2$. Write $q=q_k(i)$ and $p=p_i$. Lemma~\ref{lem:capacity} gives $q\le p<i$, and compatibility gives $w_p<w_i$. If $q=p$ the desired inequality follows. If $q<p$ and $w_q>w_i$, the positions $q<p<i$ have values $w_q>w_i>w_p$, forming $312$. This is impossible. Distinctness of the labels therefore gives $w_q<w_i$.
 \end{proof}
 
-\begin{corollary}\label{cor:A}
-For all $n$ and $k$:
-\begin{enumerate}
-\item[(i)] $\seq{A245899}(n) = \seq{A246747}(n)$, and the underlying sets of words are equal, so the bijection between $312$-avoiding unary-binary reading words and $312$-avoiding binary heaps is the identity map.
-\item[(ii)] $\seq{A245902}(k) = \seq{A245899}(2k-1)$, and for odd length the three word classes, unary-binary, full binary, and heap, coincide.
-\item[(iii)] $\seq{A245899}$ satisfies $a(n) = \sum_{i \le (n-1)/2} C_i\, a(n-i-1)$.
-\end{enumerate}
+The proof supplies the complete shape directly. Once avoidance of $312$ is known, realizability is decided by the $n-1$ comparisons in \eqref{eq:heap}; constructing the canonical realization takes $O(n)$ time. This statement does not include the cost of checking pattern avoidance.
+
+\begin{corollary}\label{cor:full312}
+If $n\equiv1\pmod{k}$, then
+\[
+\UB_n^{(k)}(312)=\FB_n^{(k)}(312)=\HP_n^{(k)}(312).
+\]
 \end{corollary}
-
 \begin{proof}
-On a fixed shape a heap is determined by its reading word, so heaps biject with heap words and (i) follows from Theorem~\ref{thm:A}. For (ii), a complete shape on an odd number of nodes has no node with exactly one child, hence is full binary; combined with $\FB \subseteq \UB$ and Theorem~\ref{thm:A} the three classes coincide. Item (iii) transports the recurrence of \seq{A246747}, established on the heap side following \cite{LPRS2016}, across the equality (i).
+At these sizes the complete shape is full $k$-ary. Combine this fact with Theorem~\ref{thm:A} and the inclusion $\FB_n^{(k)}(312)\subseteq\UB_n^{(k)}(312)$.
 \end{proof}
 
-\begin{remark}
-Theorem~\ref{thm:A} is a rigidity phenomenon: the class of admissible shapes is exponentially large, yet for $312$-avoiding words every realizable word is realizable on the one canonical shape. The proof shows slightly more, namely that any realization can be pushed onto the complete shape level by level without changing the word.
-\end{remark}
+\section{Full-degree collapse for 231}\label{sec:B}
 
-\section{The parity collapse for 231}\label{sec:B}
+The relevant consequence of $231$ avoidance is forward compatibility: if positions $p<j$ satisfy $w_p<w_j$, then every later value $w_i$, $i>j$, also exceeds $w_p$. Otherwise $w_i<w_p<w_j$ at positions $p<j<i$ would form $231$.
 
-The pattern $231$ admits no analogue of Theorem~\ref{thm:A}: the counts of $\seq{A245898}$ differ from the $231$-avoiding heap counts already at $n=4$. What survives is a parity statement, and its proof requires reshaping level partitions rather than collapsing them onto a fixed shape. We first develop the reshaping tool in full generality.
-
-\subsection{The promotion cascade}
-
-For a level partition presented as a list of levels $\mathcal{L} = (L_1, \dots, L_m)$ below a previous block $P$, define the \emph{total depth} $\delta(\mathcal{L}) = \sum_{t=1}^{m} t \cdot |L_t|$.
-
-\begin{lemma}[Promotion cascade]\label{lem:cascade}
-Let $w$ be an arbitrary word, let $P$ be a block, and suppose the suffix $x u_1 u_2 \cdots u_r$ of $w$ admits a level partition $\mathcal{L}$ with valid matchings below $P$. Then the suffix $u_1 \cdots u_r$ admits a level partition $\mathcal{L}'$ with valid matchings below the extended block $P x$, with $\delta(\mathcal{L}') < \delta(\mathcal{L})$.
-\end{lemma}
-
-\begin{proof}
-The element $x$ is the first element of the first level $L_1$. Set $J_0 = \{x\}$ and, inductively, let $J_t \subseteq L_{t+1}$ be the set of children, under the given matchings, of the nodes in $J_{t-1}$. Because matchings are order-preserving and each $J_{t-1}$ is an initial segment of its level consisting of the earliest parents that still have children, each $J_t$ is an initial segment of $L_{t+1}$; the sets $J_t$ are the \emph{promoted} nodes. Define new levels
+\begin{theorem}[Full-degree collapse]\label{thm:B}
+For every $k\ge2$ and $n\equiv1\pmod{k}$,
 \[
-L_t' \;=\; \bigl(L_t \setminus J_{t-1}\bigr) \cdot J_t ,
+\UB_n^{(k)}(231)=\FB_n^{(k)}(231).
 \]
-that is, the old level with its promoted head removed and the next promoted set appended at its end. Positions within $w$ remain contiguous: the block boundaries simply shift right by $|J_{t-1}|$ on the left and $|J_t|$ on the right.
-
-The matchings for the new partition are assembled from old parent-child pairs only. Children in $L_t \setminus J_{t-1}$ keep their old parents, which lie in $L_{t-1} \setminus J_{t-2}$ precisely because the children of $J_{t-2}$ are exactly $J_{t-1}$. Children in $J_t$ also keep their old parents, namely the nodes of $J_{t-1}$, which now sit at the end of $L_{t-1}'$; group sizes and the order-preserving property are inherited. At the top, the elements of $J_1$, the old children of $x$, attach to $x$ itself, which is now the last element of the extended block $P x$, while the rest of $L_1' $ keeps its old parents in $P$. No comparison between labels occurs anywhere in this construction beyond those already present in the old matchings, which is why no pattern hypothesis is needed. If some $L_t'$ is empty, then all deeper new levels are empty as well, since a nonempty $L_{t+1}$ forces $J_t \ne \emptyset$, and the partition simply shortens.
-
-Finally, every promoted node moves up one level and no node moves down, while $x$ leaves the level system entirely; hence $\delta$ decreases by at least one.
-\end{proof}
-
-Lemma~\ref{lem:cascade} may be read as a strong exchange property of breadth-first realizability: the set of feasible previous-block extensions is closed under absorbing the next element of the word, for every word. In the formal development this lemma is proved exactly as stated, with no side conditions.
-
-\subsection{Two parity lemmas for 231}
-
-Avoidance of $231$ enters through the following two lemmas. Both are proved by induction on $|P| + |C|$, and both consume the pattern through a single forced inequality.
-
-\begin{lemma}[Suffix compatibility]\label{lem:suffix}
-Let $(P, C)$ be blocks of a $231$-avoiding word, in block order. If $c_j > p_t$ and $j' > j$, then $c_{j'} > p_t$.
-\end{lemma}
-
-\begin{proof}
-Otherwise $(p_t, c_j, c_{j'})$ occupies increasing positions with $c_{j'} < p_t < c_j$, an occurrence of $231$.
-\end{proof}
-
-\begin{lemma}[Odd extension]\label{lem:B3}
-Let $(P, C)$ admit a valid matching in a $231$-avoiding word, let $|C|$ be odd, and let $x$ be the element of $w$ immediately following the block $C$. Then $(P,\, C \cdot x)$ admits a valid matching.
-\end{lemma}
-
-\begin{proof}
-Induct on $|P| + |C|$. Write $P = p P'$ and let $g$ be the group of $p$ in a valid matching, so $C = g \cdot C'$ with a valid matching between $P'$ and $C'$.
-
-If $|g|$ is even, then $|C'|$ is odd; the inductive hypothesis extends $(P', C')$ by $x$, and reattaching the group $g$ to $p$ proves the claim.
-
-If $|g| = 1$, say $g = (c)$ with $c > p$, there are two cases. If $C'$ is empty, then $C = (c)$ and it suffices to give $p$ the group $(c, x)$, for which we need $x > p$: otherwise $(p, c, x)$ occupies increasing positions with $x < p < c$, an occurrence of $231$. If $C'$ is nonempty, let $c'$ be its first element. The parent of $c'$ lies in $P'$, so $c'$ exceeds some later parent, and moreover $c' > p$: otherwise $(p, c, c')$ is again an occurrence of $231$. Regroup by giving $p$ the group $(c, c')$; the remaining children $C''$, namely $C'$ without its head, satisfy $|C''| = |C'| - 1$, which is odd since $|C| = 1 + |C'|$ is odd, and the matching between $P'$ and $C'$ restricts to one between $P'$ and $C''$. The inductive hypothesis extends $(P', C'')$ by $x$, and assembling the pieces proves the claim.
-\end{proof}
-
-\begin{lemma}[Even regrouping]\label{lem:B4}
-Let $(P, C)$ admit a valid matching in a $231$-avoiding word with $|C|$ even. Then $(P, C)$ admits a valid matching in which every group has size zero or two.
-\end{lemma}
-
-\begin{proof}
-The induction of Lemma~\ref{lem:B3} applies verbatim with the parities exchanged. In the case $|g| = 1$ the block $C'$ has odd size, hence is nonempty, and the same forced inequality $c' > p$ permits the regrouping $(c, c')$; the remaining children form an even block and the induction proceeds. The base cases produce only groups of size zero or two.
-\end{proof}
-
-\subsection{Proof of the parity collapse}
-
-\begin{theorem}[Parity collapse]\label{thm:B}
-Let $w \in \Av_n(231)$ with $n$ odd. If $w$ is the breadth-first reading word of an increasing unary-binary tree, then $w$ is the breadth-first reading word of an increasing full binary tree. Consequently, $\seq{A245901}(k) = \seq{A245898}(2k-1)$ for all $k \ge 1$.
+Given a realization in the left-hand class, a realization in the right-hand class can be constructed in $O(n)$ time.
 \end{theorem}
-
 \begin{proof}
-Among all level partitions of $w$ with valid matchings, choose one, $\mathcal{P} \colon L_0, L_1, \dots, L_m$, whose size vector $(n_1, \dots, n_m)$ is lexicographically maximal; the set of realizations is finite and nonempty, so the choice is possible.
+Only the forward inclusion needs proof. The singleton word is immediate, so suppose $n=km+1$ with $m\ge1$. Take a compatible parent sequence $(p_2,\ldots,p_n)$ of capacity at most $k$. Partition the nonroot positions into the blocks
+\[
+B_t=\{2+tk,\ldots,1+(t+1)k\},\qquad 0\le t<m,
+\]
+and put $j_t=2+tk$. Assign every position in $B_t$ to the original parent $p_{j_t}$ of its first position. Thus the new parent sequence is
+\begin{equation}
+p'_i=p_{j_t}\qquad(i\in B_t).\label{eq:regroup}
+\end{equation}
 
-We claim every $n_i$ with $i \ge 1$ is even. Suppose not, and let $i$ be minimal with $n_i$ odd. Since $\sum_{t \ge 1} n_t = n - 1$ is even, the number of odd levels is even, so level $i$ is not the last, and the element $x$ of $w$ immediately after $L_i$ exists; it is the first element of $L_{i+1}$. By Lemma~\ref{lem:B3} the pair $(L_{i-1},\, L_i \cdot x)$ admits a valid matching, and by Lemma~\ref{lem:cascade}, applied with previous block $L_i$ and the suffix beginning at $x$, the remainder of the word admits a level partition with valid matchings below $L_i \cdot x$. Splicing these below the unchanged levels $L_0, \dots, L_{i-1}$ produces a realization whose size vector agrees with that of $\mathcal{P}$ before index $i$ and exceeds it at index $i$. This contradicts lexicographic maximality.
+The selected parents strictly increase. If $p_{j_t}=p_{j_{t+1}}$, monotonicity would make all $k+1$ entries from $p_{j_t}$ through $p_{j_{t+1}}$ equal, violating capacity. Consequently $(p'_i)$ is nondecreasing, and every occurring parent appears exactly $k$ times. Also $p'_i=p_{j_t}<j_t\le i$.
 
-All levels of $\mathcal{P}$ are therefore even, and Lemma~\ref{lem:B4} converts its matchings, level by level, into matchings with all groups of size zero or two. The resulting structure is an increasing full binary tree with reading word $w$. The sequence identity follows since $\FB_{2k-1}(231) \subseteq \UB_{2k-1}(231)$ holds trivially and the reverse inclusion was just proved.
+Compatibility holds at $i=j_t$ by the original edge. For $i>j_t$ in the same block, a failure would give $w_i<w_{p_{j_t}}<w_{j_t}$ at positions $p_{j_t}<j_t<i$, an occurrence of $231$. Thus $w_{p'_i}<w_i$ throughout. Proposition~\ref{prop:parents} reconstructs an increasing full $k$-ary tree with word $w$.
+
+Reading the original parent array, evaluating \eqref{eq:regroup}, and building the new child lists each take linear time.
 \end{proof}
 
-\begin{remark}
-The proof is effective. Iterating the extension step terminates because the lexicographic order on bounded size vectors is well founded, and in the formal development the same argument runs on the strictly decreasing total depth of Lemma~\ref{lem:cascade}. Extracting the algorithm gives a procedure that converts any unary-binary realization of an odd-length $231$-avoiding word into a full binary one.
-\end{remark}
+For example, the $231$-avoiding word $1243567$ has a realization of maximum outdegree $3$ with parent sequence $(1,1,2,3,3,4)$. Grouping the six nonroot positions into two blocks gives $(1,1,1,3,3,3)$. The resulting full ternary tree has levels $(1)$, $(2,4,3)$, and $(5,6,7)$, with the final three labels all children of $4$.
 
-\section{Sharpness and new data}\label{sec:sharp}
+For $k=2$ this is a parity collapse. Unlike Theorem~\ref{thm:A}, it does not prescribe one shape for all words. At length $4$, for example, the $231$-avoiding word $1423$ forces vertex $4$ in BFS order to have parent position $3$, while $1243$ cannot use that parent position. Thus no single unary-binary shape realizes all words in $\UB_4^{(2)}(231)$.
 
-Both theorems fail for the pattern $321$, and they fail at the first opportunity beyond the previously published data.
+\section{Binary enumeration and sharpness}\label{sec:binary}
 
-\begin{proposition}\label{prop:sharp}
-$\UB_{11}(321)$ has $8095$ elements while $\FB_{11}(321)$ has $8048$. In particular the analogue of Theorem~\ref{thm:B} for $321$ is false, and so is any heap collapse in the sense of Theorem~\ref{thm:A}. The lexicographically least word realizable on an increasing unary-binary tree but on no increasing full binary tree is
+\subsection{Sequence identities}
+\begin{corollary}\label{cor:oeis}
+For $n\ge1$ and $r\ge1$,
+\begin{align*}
+\seq{A245899}(n)&=\seq{A246747}(n),\\
+\seq{A245902}(r)&=\seq{A245899}(2r-1),\\
+\seq{A245901}(r)&=\seq{A245898}(2r-1).
+\end{align*}
+\end{corollary}
+\begin{proof}
+The first identity follows from Theorem~\ref{thm:A} with $k=2$, since a word determines its labeling on the complete shape. The second is Corollary~\ref{cor:full312}, and the third is Theorem~\ref{thm:B}. These are identities of word sets before taking cardinalities.
+\end{proof}
+
+Levin et al.\ establish the relevant heap recurrence and the equinumerosity of $231$- and $312$-avoiding heaps in Theorems~5 and~6 of \cite{LPRS2016}. Transporting that recurrence across Corollary~\ref{cor:oeis} gives
+\begin{equation}
+a(n)=\sum_{i=0}^{\lfloor(n-1)/2\rfloor} C_i\,a(n-i-1),\qquad n\ge1,\quad a(0)=1,\label{eq:recurrence}
+\end{equation}
+where $C_i=\frac1{i+1}\binom{2i}{i}$ and $a(n)=\seq{A245899}(n)$ for positive $n$. The value $a(0)=1$ is the auxiliary empty-heap convention; the word-counting OEIS entry begins at $n=1$.
+
+\subsection{Two different obstructions for 321}
+\begin{proposition}\label{prop:heapfailure}
+The analogue of Theorem~\ref{thm:A} for binary trees and pattern $321$ fails first at length $4$.
+\end{proposition}
+\begin{proof}
+The word $1423$ avoids $321$ and is realized by the edges $1\to4$, $1\to2$, and $2\to3$, with root children ordered $4,2$. The heap edge at position $4$ would require $4<3$. At lengths at most $3$, every nonroot heap parent is the root, whose label is $1$, so no counterexample exists.
+\end{proof}
+
+\begin{proposition}\label{prop:parityfailure}
+The $321$ full binary collapse first fails at odd length $11$. At that length,
 \[
-1\,4\,2\,5\,3\,7\,8\,9\,10\,6\,11 .
+|\UB_{11}^{(2)}(321)|=8095,\qquad |\FB_{11}^{(2)}(321)|=8048.
+\]
+The lexicographically least word in their difference is
+\[
+(1,4,2,5,3,7,8,9,10,6,11).
 \]
 \end{proposition}
+\begin{proof}
+Exhaustive enumeration, described in Section~\ref{sec:verification}, gives equality of the sets at lengths $1,3,5,7,9$, the two counts at length $11$, and their complete $47$-word difference. It also determines the least word displayed above.
 
-The $47$ witnesses were found and confirmed by two independent programs, and each witness is a finite certificate that can be checked by hand or machine. The structural reason for the failure is visible in the proofs: the forced inequalities of Lemmas~\ref{lem:suffix} and~\ref{lem:B3} arise from triples forming the patterns $231$ or $312$, which avoidance of $321$ does not exclude. The published data of the six sequences, in which the full binary counts agreed with the odd-indexed unary-binary counts for all three patterns as far as they had been computed, was in this respect misleading: the agreement for $321$ is a small-size coincidence that ends exactly where the 2014 computations stopped.
+For this particular word, realizability and nonrealizability admit direct certificates. A unary-binary realization has BFS outdegrees
+\[
+(2,1,2,2,2,0,0,0,0,1,0).
+\]
+The resulting edges all increase. The word avoids $321$: within its first five positions there is no decreasing triple, the values $7,8,9,10$ increase, the later $6$ exceeds every value in those first five positions, and the terminal $11$ cannot complete a decreasing triple.
 
-Table~\ref{tab:terms} reports the new terms of all six sequences. Terms up to length $11$ were computed independently by a brute-force enumeration of trees and by a pruned depth-first search over words with an incremental realizability test; the two programs agree with each other and with all thirty-six previously published values. The deeper terms come from the second program alone.
+In a full binary realization the first levels must be $(1)$, $(4,2)$, and $(5,3)$. Indeed, $4$ cannot take the pair $(5,3)$, so $2$ must take it. The next level has size two or four. Size four gives $(7,8,9,10)$, below which the next value $6$ has no possible parent. Size two gives $(7,8)$; a following level of size four would contain $6$, again impossible. The following level must therefore be $(9,10)$, after which $6$ still has no possible parent. No full binary realization exists.
+\end{proof}
+
+\subsection{Additional sequence entries}
+
+Table~\ref{tab:terms} extends the retained baseline of eight terms in each unary-binary entry and five terms in each full binary entry. These $39$ baseline entries are reproduced by both enumeration programs. The table contains $28$ additional entries: $27$ obtained by direct enumeration and $\seq{A245898}(15)$ obtained from the full binary count using Corollary~\ref{cor:oeis}. Here ``additional'' refers to entries in these six sequences relative to that baseline; the $312$ values also occur in the previously known heap sequence.
 
 \begin{table}[ht]
-\centering
-\small
-\begin{tabular}{@{}rrrr@{\hskip 2.5em}rrrr@{}}
+\centering\small
+\begin{tabular}{@{}rrrr@{\hskip 1.5em}rrrr@{}}
 \toprule
-\multicolumn{4}{c}{Unary-binary, length $n$} & \multicolumn{4}{c}{Full binary, length $\ell$} \\
-\cmidrule(r{2em}){1-4}\cmidrule{5-8}
-$n$ & \seq{A245898} & \seq{A245899} & \seq{A245900} & $\ell$ & \seq{A245901} & \seq{A245902} & \seq{A245903} \\
- & $(231)$ & $(312)$ & $(321)$ & & $(231)$ & $(312)$ & $(321)$ \\
+\multicolumn{4}{c}{Unary-binary, length $n$}&\multicolumn{4}{c}{Full binary, length $\ell$}\\
+\cmidrule(r{1em}){1-4}\cmidrule{5-8}
+$n$&\seq{A245898}&\seq{A245899}&\seq{A245900}&$\ell$&\seq{A245901}&\seq{A245902}&\seq{A245903}\\
+&$(231)$&$(312)$&$(321)$&&$(231)$&$(312)$&$(321)$\\
 \midrule
-9  & 667    & 222   & 753    & 11 & 6788   & 1601   & 8048 \\
-10 & 2098   & 544   & 2439   & 13 & 74969  & 12416  & 92716 \\
-11 & 6788   & 1601  & 8095   & 15 & 877865 & 105769 & 1125054 \\
-12 & 22349  & 4095  & 27350  \\
-13 & 74969  & 12416 & 93885  \\
-14 & 254848 & 33785 & 326396 \\
+9&667&222&753&11&6788&1601&8048\\
+10&2098&544&2439&13&74969&12416&92716\\
+11&6788&1601&8095&15&877865&105769&1125054\\
+12&22349&4095&27350&&&&\\
+13&74969&12416&93885&&&&\\
+14&254848&33785&326396&&&&\\
+15&$877865^{\ast}$&&&&&&\\
 \bottomrule
 \end{tabular}
-\caption{New terms of the six sequences. The previously published data ended at $n = 8$ and $\ell = 9$. The identities $\seq{A245901}(k) = \seq{A245898}(2k-1)$ and $\seq{A245902}(k) = \seq{A245899}(2k-1)$, visible in the table, are Theorems~\ref{thm:B} and~\ref{thm:A}; the divergence $8095 \ne 8048$ in the $321$ columns is Proposition~\ref{prop:sharp}.}
-\label{tab:terms}
+\caption{Additional entries relative to the recorded baseline. The starred entry follows from the proved $231$ identity. Unfilled cells are outside the displayed computational range. Directly enumerated terms through length $11$ have two enumeration checks; larger direct terms were recomputed with the prefix-search solver. The $312$ terms also agree with recurrence~\eqref{eq:recurrence}.}\label{tab:terms}
 \end{table}
 
-\section{Verification}\label{sec:verify}
+\section{Exponential growth}\label{sec:growth}
 
-The claims of this paper are supported by three independent layers, each sufficient on its own to check the results, and all contained in the accompanying repository.
+\begin{corollary}\label{cor:growth}
+For every fixed $k\ge2$ and $\tau\in\{231,312,321\}$,
+\[
+\lim_{n\to\infty}|\UB_n^{(k)}(\tau)|^{1/n}=4,
+\qquad
+\lim_{\substack{n\to\infty\\n\equiv1\, (\mathrm{mod}\,k)}}
+|\FB_n^{(k)}(\tau)|^{1/n}=4.
+\]
+\end{corollary}
+\begin{proof}
+Each of the three patterns is sum indecomposable, meaning it cannot be written as a direct sum of two shorter nonempty permutations. Defant's Theorem~2.1 \cite{Defant2019} therefore gives
+$\lim_n|\HP_n^{(k)}(\tau)|^{1/n}=\lim_n|\Av_n(\tau)|^{1/n}=4$,
+since the latter counts are Catalan numbers. The inclusions
+\[
+\HP_n^{(k)}(\tau)\subseteq\UB_n^{(k)}(\tau)\subseteq\Av_n(\tau)
+\]
+prove the first limit by squeezing. At admissible full-tree sizes the complete shape is full, so the same argument with $\FB$ proves the second.
+\end{proof}
 
-\emph{Exhaustive computation.} Every lemma was tested on every instance within exhaustive small ranges before being proved: Lemma~\ref{lem:B3} on $27{,}364$ instances, Lemma~\ref{lem:B4} on $18{,}677$, and Lemma~\ref{lem:cascade}, in its unconditional form over all words including those avoiding nothing, on $127{,}127$ instances, with no failures. The two enumeration programs are algorithmically unrelated, one enumerating labeled trees and collecting reading words into a set, the other enumerating pattern-avoiding words and deciding realizability by dynamic programming, so agreement between them on every overlapping value is meaningful evidence of correctness independent of the proofs. This discipline earned its keep during the research: three natural candidate lemmas, among them a mirrored version of Lemma~\ref{lem:balanced} for $231$, were falsified by counterexamples at $n \le 9$ before the correct statements were found. The final proofs use none of the falsified statements.
+These limits determine exponential growth per vertex. In the full binary OEIS indexing, where entry $r$ corresponds to $2r-1$ vertices, the corresponding $r$-th root limit is $16$. Exponential growth does not by itself establish convergence of consecutive ratios or a leading asymptotic term. In particular, the early ratios of \seq{A245898} below $4$ do not identify a smaller limiting growth constant.
 
-\emph{Formalization.} Both theorems are formalized in Lean 4 \cite{Lean4} in about two thousand lines. The development defines an inductive type of rooted plane labeled trees, the increasing, unary-binary, and full binary predicates, and the level-order reading word, and proves the equivalence between this tree-level formulation and the level-matching formulation of Proposition~\ref{prop:levels}. The final statements are therefore about genuine trees, with no encoding left to trust:
-\begin{align*}
-&\texttt{theoremA\_trees} : (\exists\, t,\ \mathrm{Inc}\ t \wedge \mathrm{UB}\ t \wedge \mathrm{levelOrder}\,[t] = w) \leftrightarrow \mathrm{HeapCond}\ w \\
-&\texttt{theoremB\_trees} : (\exists\, t,\ \mathrm{Inc}\ t \wedge \mathrm{UB}\ t \wedge \mathrm{levelOrder}\,[t] = w) \rightarrow (\exists\, t,\ \mathrm{Inc}\ t \wedge \mathrm{FB}\ t \wedge \mathrm{levelOrder}\,[t] = w)
-\end{align*}
-under the hypotheses of the corresponding theorems. The development contains no \texttt{sorry}, and the kernel's axiom audit reports only propositional extensionality, choice, and quotient soundness, the standard axiomatic base of Lean's mathematical library. Formalization also repaid the effort mathematically: the original proof of Theorem~\ref{thm:A} required a delicate case analysis forcing dyadic level sizes, which the formal proof replaced by the telescoping invariant $s_j \le 2 s_{j-1}$ appearing in Section~\ref{sec:A}, and the explicit chain-shifting arguments first used for Lemmas~\ref{lem:B3} and~\ref{lem:B4} dissolved into the structural inductions printed above.
+\section{Computational and formal verification}\label{sec:verification}
 
-\emph{Data.} The twenty-eight new terms, the raw outputs of both programs, and the $47$ certificates of Proposition~\ref{prop:sharp} are archived in the repository, and the entire verification, computational and formal, reproduces from two commands.
+\subsection{Enumeration and certificates}
+The reference program recursively assigns zero, one, or two increasing children to each current parent, or zero or two in full binary mode. It collects complete BFS words in a set and filters them by a cubic triple test. This counts each word once even when several trees realize it. The second program enumerates permutation prefixes, discarding those that contain the forbidden pattern or have no feasible level-matching state. Its state includes level boundaries and a nondeterministic parent-child matching automaton. Agreement between the programs checks two different realizability implementations; it does not assume probabilistic independence of their possible errors.
 
-\section{Conclusion}\label{sec:conclusion}
+Both programs reproduce all $39$ baseline entries and all $12$ directly computed extensions through length $11$. The complete retained table is recomputed by the second program through unary-binary length $14$ and full binary length $15$. Equation~\eqref{eq:recurrence} checks every displayed $312$ value and generates the longer b-files: indices $1$ through $1000$ for \seq{A245899} and $1$ through $500$ for \seq{A245902}. Every b-file is checked for its index range and values.
 
-The breadth-first reading words of increasing trees looked, from the 2014 data, like a family of six parallel enumeration problems distinguished only by the choice of pattern. The results of this paper show that the landscape is sharply differentiated. For $312$ the problem is rigid: realizability collapses onto the single complete shape, the word class is characterized by the elementary heap inequality of Theorem~\ref{thm:A}, and the sequence \seq{A245899} is governed by a Catalan convolution. For $231$ the shapes remain genuinely diverse, but Theorem~\ref{thm:B} shows that at odd length the unary-binary and full binary classes coincide, so the six sequences of \cite{LPRS2016} contain only four independent enumeration problems. For $321$ neither statement survives, and the divergence begins at exactly the first term beyond the published data, a reminder that agreement of small initial segments is weak evidence in this territory.
+The certificate verifier compares the retained list of $47$ words with the exact difference of the reference word sets. It also checks each word using a separate dynamic program over BFS degree sequences, which uses neither level boundaries nor the matching automaton. The same program tests the general-$k$ statements on every permutation through length $7$ for $k=2,3,4$, and reconstructs the BFS traversal produced by the full-degree construction. These are finite computational checks of the implementation and examples; the unrestricted statements are established by the proofs.
 
-Beyond the specific identities, two products of this work seem likely to be useful elsewhere. The promotion cascade of Lemma~\ref{lem:cascade} is a pattern-free exchange principle for breadth-first realizability, and it did all of the structural work in Section~\ref{sec:B}; we expect it to transfer to other reading-word problems essentially unchanged. And the three-layer methodology, exhaustive falsification of candidate lemmas before proof, followed by formalization that fed simplifications back into the informal arguments, materially shaped the final mathematics: the printed proofs of Theorem~\ref{thm:A} and Lemmas~\ref{lem:B3} and~\ref{lem:B4} are shorter and cleaner than the versions first found, and three plausible intermediate statements were eliminated by machine before they could mislead the development. The complete resolution of the conjectures, from open OEIS annotations to kernel-checked theorems about inductive trees, closes every gap between claim and certainty that we know how to close.
+The original binary test suite is retained. It checks Theorem~\ref{thm:A} through length $11$, Theorem~\ref{thm:B} at lengths $9$ and $11$, and three auxiliary matching properties. Its $127127$ promotion-cascade instances range over unary-binary-realizable permutations of sizes $8$ and $9$ without a pattern-avoidance filter. The unconditional promotion lemma is proved separately and is not inferred from this finite sample.
 
-\section{Open problems}\label{sec:open}
+\subsection{Lean statements and scope}
+The Lean~4 development uses the pinned toolchain and no external library dependencies \cite{Lean4}. The binary results \texttt{theoremA\_trees} and \texttt{theoremB\_trees} quantify over an inductive type of ordered labeled trees. The definitions of increasing labels, unary-binary and full binary degrees, and breadth-first traversal are connected to the original level-matching representation by proved equivalences.
 
-\begin{question}
-Find a closed formula or a proven recurrence for $\seq{A245898}$, the $231$-avoiding unary-binary reading words. The sequence matches nothing previously in the OEIS, and its growth ratio appears to approach a limit near $3.5$; even the existence of the limit is open.
-\end{question}
+The general-$k$ development verifies the parent-sequence arguments: the capacity bound, the complete-heap inequalities for $312$, and the block construction with increasing labels for $231$. Proposition~\ref{prop:parents} supplies the general tree interpretation in the mathematical proof; the separate binary development supplies the kernel-checked tree interpretation for the OEIS applications. The formalization records these scopes explicitly. Kernel verification establishes the declared mathematical statements; the enumeration counts and the literature attributions are checked by their respective computational and source evidence.
 
-\begin{question}
-Theorem~\ref{thm:A} collapses $312$-avoiding realizability onto the complete shape. Is there a structural classification, for each pattern $\tau$, of the minimal set of shapes needed to realize all words of $\UB_n(\tau)$? Proposition~\ref{prop:sharp} shows that for $321$ this set is strictly larger than the full binary shapes; how much larger?
-\end{question}
+\subsection{Reproduction and availability}
+The public repository contains the LaTeX source, Lean sources, both enumerators, the parent-sequence verifier, raw sequence tables, b-files, and certificates. The release includes the PDF, a complete source and evidence archive, a machine-readable manifest, checksums, and execution logs. The following commands reproduce the checks:
+\begin{verbatim}
+make verify-python   # binary lemmas, words, certificates, b-files
+make verify-lean     # kernel checks and axiom audit
+make recompute       # all retained direct sequence terms
+make paper           # rebuild this PDF
+\end{verbatim}
+The repository and versioned release are available at
+\url{https://github.com/vicotrbb/bfs-avoidance-frontier}.
 
-\begin{question}
-The promotion cascade holds for arbitrary words and seems to be a basic exchange property of breadth-first realizability. Does it extend to increasing $k$-ary trees for $k > 2$, and do the corresponding parity collapses hold for the patterns whose forced triples survive, in the sense of Section~\ref{sec:B}, in the $k$-ary setting?
-\end{question}
+\section{Further questions}\label{sec:questions}
 
-\section*{Acknowledgments}
+The structural identities leave several enumeration questions. An exact recurrence or generating function for $\UB_n^{(2)}(231)$ would complement the known heap recurrence for $312$. Corollary~\ref{cor:growth} fixes the exponential rate, so the remaining asymptotic questions concern subexponential factors, possible periodic effects, and convergence of ratios.
 
-The research, the proofs, the code, and the Lean formalization in this work were developed in an AI-assisted workflow directed by the author, using Claude (Anthropic). Every result is independently checkable through the verification layers of Section~\ref{sec:verify}, none of which requires trust in that workflow. The author thanks the maintainers of the OEIS, whose careful recording of the 2014 data and conjectures made the questions visible.
+For $321$, the difference
+$|\UB_{2r-1}^{(2)}(321)|-|\FB_{2r-1}^{(2)}(321)|$
+vanishes for $r\le5$ and equals $47$ at $r=6$. A structural characterization of these missing words could replace exhaustive nonrealizability tests with a description of the obstruction. More generally, one can ask which pattern classes admit degree normalization by parent blocks, and which restrictions on allowed outdegrees are preserved by the promotion lemma.
 
+The algorithms also suggest a distinction worth studying: a word may admit a rapidly checkable canonical realization even when direct enumeration over shapes is expensive. For $312$, Theorem~\ref{thm:A} supplies such a recognition criterion. For $231$, Theorem~\ref{thm:B} transforms a supplied realization. A structural recognition criterion simpler than the general degree-sequence dynamic program would complement this construction.
+
+\section{Conclusion}
+
+Breadth-first parent sequences expose two mechanisms behind pattern-avoiding tree realizability. For $312$, the capacity lower bound on parent positions combines with one forbidden triple to force the complete heap inequalities. For $231$, forward compatibility allows consecutive blocks of $k$ children to share a parent, giving a full $k$-ary realization whenever the size permits one. These arguments prove word-set equalities for every branching bound and yield the three binary OEIS identities as specializations.
+
+For binary trees, $321$ heap collapse fails at four vertices and full-degree collapse at eleven. The formal proofs, sequence tables, and complete counterexample set make these distinctions reproducible. Exponential growth is $4$; finer enumeration for $231$ and a structural classification of $321$ obstructions remain open.
+
+\appendix
+\section{A pattern-free promotion principle}\label{sec:cascade}
+
+A level matching assigns a consecutive group of children to each parent in order, with at most $k$ children per parent and increasing labels along each edge. A suffix realization below a previous level $P$ is a sequence of nonempty levels with valid adjacent matchings. Define its total depth as $\delta(L_1,\ldots,L_m)=\sum_{t=1}^m t|L_t|$.
+
+\begin{lemma}[Promotion]\label{lem:promotion}
+Suppose a nonempty suffix $x u$ is realizable below $P$ with maximum outdegree $k$. Then $u$ is realizable below the extended previous level $Px$, with strictly smaller total depth. No pattern-avoidance or distinctness hypothesis is needed.
+\end{lemma}
+\begin{proof}
+Let $J_0=\{x\}$ and let $J_t$ be the children of $J_{t-1}$ in the old level $L_{t+1}$. Each $J_t$ is an initial segment, because the matchings preserve parent order. Promote $x$ and all its descendants by one level, replacing
+\[
+L_t\quad\hbox{with}\quad L'_t=(L_t\setminus J_{t-1})J_t.
+\]
+The new levels remain contiguous blocks of the word. Every remaining edge is an old edge: nonpromoted children stay with nonpromoted parents, and promoted children stay with promoted parents. At the top, the old children of $x$ are appended to the children remaining below $P$. The edge formerly entering $x$ is deleted. Outdegrees therefore remain unchanged except for the parent that loses $x$, whose degree decreases by one. All degree upper bounds and label inequalities persist.
+
+If a new level is empty, then its old level consisted entirely of promoted vertices and their child set is empty. All deeper levels are empty as well, so trailing empty levels are discarded. Every promoted vertex moves up one level, no vertex moves down, and $x$ leaves the suffix. Total depth decreases strictly.
+\end{proof}
+
+The lemma works for any fixed outdegree upper bound. It does not by itself preserve the full-degree condition, since the parent of $x$ loses one child. The binary case, including strict depth decrease, is formalized as \texttt{chain\_plus}. The main theorems use the direct parent-sequence constructions instead.
+
+\section*{Acknowledgments and assistance}
+The author used Claude (Anthropic) and Codex (OpenAI) for assistance with mathematical exploration, manuscript revision, programming, and Lean formalization. The repository records the mathematical statements and executable verification artifacts. The author is responsible for the definitions, arguments, attribution, and final presentation. The OEIS records and the work of Levin, Pudwell, Riehl, Sandberg, and Defant provided the enumerative questions and the prior results used here.
+
+\clearpage
 \begin{thebibliography}{10}
-
-\bibitem{AERRSV2016}
-J.~Anderson, E.~Egge, M.~Riehl, L.~Ryan, R.~Steinke, and Y.~Vaughan,
-Pattern avoiding linear extensions of rectangular posets,
-arXiv:1605.06825, 2016.
-
-\bibitem{BFMR2017}
-J.~Bettinelli, \'E.~Fusy, C.~Mailler, and L.~Randazzo,
-A bijective study of basketball walks,
-\emph{S\'eminaire Lotharingien de Combinatoire} \textbf{77} (2017), Article B77a.
-
-\bibitem{Bona2012}
-M.~B\'ona,
-\emph{Combinatorics of Permutations}, second edition,
-Chapman and Hall/CRC, 2012.
-
-\bibitem{Defant2019}
-C.~Defant,
-Proofs of conjectures about pattern-avoiding linear extensions,
-\emph{Discrete Mathematics and Theoretical Computer Science} \textbf{21}(4) (2019), \#16.
-
-\bibitem{Kitaev2011}
-S.~Kitaev,
-\emph{Patterns in Permutations and Words},
-Springer, 2011.
-
-\bibitem{Knuth1997}
-D.~E. Knuth,
-\emph{The Art of Computer Programming, Volume 1: Fundamental Algorithms}, third edition,
-Addison-Wesley, 1997.
-
-\bibitem{LPRS2016}
-D.~Levin, L.~K. Pudwell, M.~Riehl, and A.~Sandberg,
-Pattern avoidance in $k$-ary heaps,
-\emph{Australasian Journal of Combinatorics} \textbf{64}(1) (2016), 120--139.
-
-\bibitem{Lean4}
-L.~de~Moura and S.~Ullrich,
-The Lean 4 theorem prover and programming language,
-in \emph{Automated Deduction, CADE 28},
-Lecture Notes in Computer Science \textbf{12699}, Springer, 2021, 625--635.
-
-\bibitem{OEIS}
-OEIS Foundation Inc.,
-\emph{The On-Line Encyclopedia of Integer Sequences},
-published electronically at \url{https://oeis.org}, 2026.
-Sequences \seq{A245898}, \seq{A245899}, \seq{A245900}, \seq{A245901}, \seq{A245902}, \seq{A245903}, \seq{A246747}.
-
+\bibitem{AERRSV2016} J.~Anderson, E.~Egge, M.~Riehl, L.~Ryan, R.~Steinke, and Y.~Vaughan, Pattern avoiding linear extensions of rectangular posets, arXiv:1605.06825, 2016.
+\bibitem{BFMR2017} J.~Bettinelli, \'E.~Fusy, C.~Mailler, and L.~Randazzo, A bijective study of basketball walks, \emph{S\'eminaire Lotharingien de Combinatoire} \textbf{77} (2017), Article B77a. \url{https://arxiv.org/abs/1611.01478}.
+\bibitem{Bona2012} M.~B\'ona, \emph{Combinatorics of Permutations}, second edition, Chapman and Hall/CRC, 2012.
+\bibitem{Defant2019} C.~Defant, Proofs of conjectures about pattern-avoiding linear extensions, \emph{Discrete Mathematics and Theoretical Computer Science} \textbf{21}(4) (2019), \#16. \url{https://doi.org/10.23638/DMTCS-21-4-16}.
+\bibitem{Kitaev2011} S.~Kitaev, \emph{Patterns in Permutations and Words}, Springer, 2011.
+\bibitem{Knuth1997} D.~E. Knuth, \emph{The Art of Computer Programming, Volume 1: Fundamental Algorithms}, third edition, Addison-Wesley, 1997.
+\bibitem{LPRS2016} D.~Levin, L.~K. Pudwell, M.~Riehl, and A.~Sandberg, Pattern avoidance in $k$-ary heaps, \emph{Australasian Journal of Combinatorics} \textbf{64}(1) (2016), 120--139. \url{https://ajc.maths.uq.edu.au/pdf/64/ajc_v64_p120.pdf}.
+\bibitem{Lean4} L.~de~Moura and S.~Ullrich, The Lean 4 theorem prover and programming language, in \emph{Automated Deduction, CADE 28}, Lecture Notes in Computer Science \textbf{12699}, Springer, 2021, 625--635.
+\bibitem{OEIS} OEIS Foundation Inc., \emph{The On-Line Encyclopedia of Integer Sequences}, \url{https://oeis.org}. Entries \seq{A245898}, \seq{A245899}, \seq{A245900}, \seq{A245901}, \seq{A245902}, \seq{A245903}, and \seq{A246747}; accessed September 2026.
 \end{thebibliography}
-
 \end{document}

@@ -1,0 +1,23 @@
+{
+  "status": "pass",
+  "checked_at_utc": "2026-09-29T15:34:31.241980+00:00",
+  "checks": {
+    "full_direct_recomputation": true,
+    "execution_input_hashes": 17,
+    "independent_parent_dp_comparisons": 47304,
+    "formal_statements_audited": [
+      "parent_theoremA_iff",
+      "parent_theoremB",
+      "regroup_full_children",
+      "theoremA_trees",
+      "theoremB_trees",
+      "ubword_iff_tree",
+      "bword_iff_tree"
+    ],
+    "paper_table_entries": 28,
+    "source_files_checked_for_em_dash": 34,
+    "pdf_sha256": "82d64e62145db5cfd140ab359caa53d76f6898c8123cddfc8f1e34b0d883dd93",
+    "pdf_pages_visually_reviewed": 10
+  },
+  "paper_sha256": "61eb04f2de554b9d820c05023cd1030868745e7f317d00c1dacb2b1aceab30b3"
+}

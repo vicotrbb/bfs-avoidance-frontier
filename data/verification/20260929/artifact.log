@@ -1,0 +1,174 @@
+Solver verified: ub 231 through 14
+Solver verified: ub 312 through 14
+Solver verified: ub 321 through 14
+Solver verified: b 231 through 15
+Solver verified: b 312 through 15
+Solver verified: b 321 through 15
+Reference values and exact 47-word certificate verified
+{
+  "status": "pass",
+  "full_recomputation": true,
+  "checked_at_utc": "2026-09-29T15:33:36.467245+00:00",
+  "python": "3.14.6",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "seconds": 1285.985,
+  "checks": {
+    "solver": [
+      {
+        "mode": "ub",
+        "pattern": 231,
+        "values": {
+          "1": 1,
+          "2": 1,
+          "3": 2,
+          "4": 4,
+          "5": 10,
+          "6": 26,
+          "7": 74,
+          "8": 217,
+          "9": 667,
+          "10": 2098,
+          "11": 6788,
+          "12": 22349,
+          "13": 74969,
+          "14": 254848
+        },
+        "seconds": 245.694
+      },
+      {
+        "mode": "ub",
+        "pattern": 312,
+        "values": {
+          "1": 1,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 7,
+          "6": 14,
+          "7": 37,
+          "8": 80,
+          "9": 222,
+          "10": 544,
+          "11": 1601,
+          "12": 4095,
+          "13": 12416,
+          "14": 33785
+        },
+        "seconds": 90.253
+      },
+      {
+        "mode": "ub",
+        "pattern": 321,
+        "values": {
+          "1": 1,
+          "2": 1,
+          "3": 2,
+          "4": 4,
+          "5": 10,
+          "6": 27,
+          "7": 79,
+          "8": 239,
+          "9": 753,
+          "10": 2439,
+          "11": 8095,
+          "12": 27350,
+          "13": 93885,
+          "14": 326396
+        },
+        "seconds": 316.963
+      },
+      {
+        "mode": "b",
+        "pattern": 231,
+        "values": {
+          "1": 1,
+          "3": 2,
+          "5": 10,
+          "7": 74,
+          "9": 667,
+          "11": 6788,
+          "13": 74969,
+          "15": 877865
+        },
+        "seconds": 835.79
+      },
+      {
+        "mode": "b",
+        "pattern": 312,
+        "values": {
+          "1": 1,
+          "3": 2,
+          "5": 7,
+          "7": 37,
+          "9": 222,
+          "11": 1601,
+          "13": 12416,
+          "15": 105769
+        },
+        "seconds": 256.043
+      },
+      {
+        "mode": "b",
+        "pattern": 321,
+        "values": {
+          "1": 1,
+          "3": 2,
+          "5": 10,
+          "7": 79,
+          "9": 753,
+          "11": 8048,
+          "13": 92716,
+          "15": 1125054
+        },
+        "seconds": 1008.491
+      }
+    ],
+    "reference_values": 51,
+    "certificate_words": 47,
+    "general_k": [
+      {
+        "k": 2,
+        "permutations": 5913,
+        "conversions": 87
+      },
+      {
+        "k": 3,
+        "permutations": 5913,
+        "conversions": 118
+      },
+      {
+        "k": 4,
+        "permutations": 5913,
+        "conversions": 15
+      }
+    ],
+    "bfiles": {
+      "245898": {
+        "first_index": 1,
+        "last_index": 15
+      },
+      "245899": {
+        "first_index": 1,
+        "last_index": 1000
+      },
+      "245900": {
+        "first_index": 1,
+        "last_index": 14
+      },
+      "245901": {
+        "first_index": 1,
+        "last_index": 8
+      },
+      "245902": {
+        "first_index": 1,
+        "last_index": 500
+      },
+      "245903": {
+        "first_index": 1,
+        "last_index": 8
+      }
+    },
+    "new_sequence_entries": 28,
+    "previously_displayed_entries": 39
+  }
+}

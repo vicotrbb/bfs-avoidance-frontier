@@ -1,63 +1,21 @@
-# Prior-Work / Novelty Audit (July 24, 2026)
+# Prior work and attribution
 
-Question: are Theorems A and B in THEOREMS.md new, or already in the literature?
+Updated September 29, 2026. This is a source-based account of the relationship between the results, not a claim that all potentially relevant literature has been enumerated.
 
-## What exists
+## Primary sources
 
-- **Levin, Pudwell, Riehl, Sandberg**, *Pattern avoidance in k-ary heaps*,
-  Australas. J. Combin. 64.1 (2016) 120–139. Introduced the objects; counted
-  pattern-avoiding **heaps** (fixed complete shape) for all length-3 pattern
-  sets except {321}. Source of A246747 and its Catalan recurrence. Did NOT
-  treat arbitrary unary-binary trees, and left the A245899 = A246747
-  connection as an observed coincidence.
-- **Colin Defant**, *Proofs of conjectures about pattern-avoiding linear
-  extensions*, DMTCS 21:4 #16 (2019), arXiv:1905.02309. Proves a DIFFERENT
-  LPRS conjecture: the growth rate lim |H²_n(321)|^{1/n} = 4 for 321-avoiding
-  binary heaps. No unary-binary trees, no word-set equalities.
-- **Bettinelli, Fusy, Mailler, Randazzo**, *A bijective study of basketball
-  walks* (arXiv:1611.01478). Treats the **213** pattern only (tree-counting
-  A245889 family, bijection with walks). Its Lemma 7 gives a validity
-  criterion for labelings of a fixed unary-binary tree — related machinery,
-  different theorems, different pattern.
-- **Sela Fried**, *Proofs of some conjectures from the OEIS* (arXiv:2410.07237):
-  covers 17 sequences, none of ours.
+1. [Levin, Pudwell, Riehl, Sandberg, Pattern avoidance in k-ary heaps (2016)](https://ajc.maths.uq.edu.au/pdf/64/ajc_v64_p120.pdf). Studies fixed complete heap shapes. Theorems 5 and 6 provide the relevant Catalan recurrence and the connection between 231- and 312-avoiding binary heaps. The present work identifies the union-over-shapes 312 word set with the complete-shape word set.
+2. [Defant, Proofs of conjectures about pattern-avoiding linear extensions (2019)](https://dmtcs.episciences.org/articles/5796). Theorem 2.1 applies to every set of sum-indecomposable forbidden patterns, not only 321. Together with inclusions between heap words, arbitrary-shape words, and unrestricted avoiders, it implies exponential growth 4 for the three patterns treated here. Consecutive-ratio convergence is a different question.
+3. [Bettinelli, Fusy, Mailler, Randazzo, A bijective study of basketball walks](https://arxiv.org/abs/1611.01478). Studies 213-avoiding increasing unary-binary trees and basketball-walk bijections. Its fixed-shape labeling criterion is related to realizability, but its counted objects and pattern differ from the present word-set equalities.
+4. [OEIS A246747](https://oeis.org/A246747). Counts 231-avoiding heaps and also 312-avoiding heaps; records the tentative equality with A245899 and the established recurrence. Its offset includes n=0, whereas A245899 begins at n=1.
+5. [OEIS A245899](https://oeis.org/A245899). Counts distinct 312-avoiding unary-binary words and records a tentative odd-index relationship with A245902.
+6. [OEIS A245898](https://oeis.org/A245898). States the odd-index relationship with A245901 affirmatively. That entry does not supply a proof, but its wording should not be described as an explicit conjecture without historical evidence.
+7. [OEIS A245900](https://oeis.org/A245900). Lists 1423 among the size-4 words. This is already a counterexample to 321 heap collapse. The length-11 computation concerns the different full binary collapse.
 
-## Evidence the theorems were open until now
+## Contribution
 
-1. The live OEIS entries (checked July 24, 2026): A246747 still carries the
-   cross-reference "**May be equal to A245899**" — OEIS's standard phrasing
-   for an unproven observation — and A245899 still carries "A245902 appears
-   to be the odd-indexed terms" plus the `more` keyword and no formula.
-   OEIS editors routinely update entries when equalities are proven.
-2. Targeted searches for the sequence IDs (A245899, A246747, A245898,
-   A245901–A245903) in combination with "proof"/"conjecture"/"bijection"
-   return no resolving paper.
-3. The citation trail of LPRS 2016 (Defant, shrub-forest papers, rooted-forest
-   pattern papers) contains no result on word-set equalities between
-   unary-binary-tree BFS words and heap words, nor on odd-length
-   full-binary collapses.
+The paper gives direct proofs of two word-set equalities for arbitrary branching bounds using BFS parent sequences. The binary consequences establish the three stated sequence identities. The additional data extends the six word-count sequences relative to their retained baseline; many 312 values were already available in A246747 and become transferable through the proved identity.
 
-## Final arXiv full-text sweep (July 24, 2026)
+Targeted searches for the sequence identifiers and the relevant reading-word terminology did not identify an earlier proof of these exact arbitrary-shape equalities. This supports a qualified novelty assessment. OEIS's `more` keyword requests terms and does not certify that a mathematical statement is open. Search result counts do not establish literature completeness.
 
-The relevant literature on arXiv is small enough to enumerate completely:
-
-- Query `"k-ary heaps" pattern` → **exactly one paper**: Defant 2019
-  (arXiv:1905.02309), which proves the 321-heap growth-rate conjecture —
-  read in full, no overlap with Theorems A/B.
-- Query `"breadth-first search reading word"` → **zero papers**.
-- Query `"increasing unary-binary trees"` → **exactly one paper**: the
-  basketball-walks paper (arXiv:1611.01478), 213 pattern only —
-  text extracted and checked, no overlap.
-- Queries for the sequence IDs A245898/A245899/A245901/A245903 across
-  arXiv full text → no genuine hits (two false positives checked and
-  dismissed: arXiv:2205.10163 on perfect powers, arXiv:2410.16334 on
-  involution asymptotics).
-
-## Conclusion
-
-To the best of a thorough same-day web/OEIS/arXiv audit: **Theorem A
-(312 heap collapse, proving A245899 = A246747 and A245902(k) = A245899(2k−1))
-and Theorem B (231 parity collapse, proving A245901(k) = A245898(2k−1)) are
-new.** The questions were known (recorded as conjectures in OEIS since
-2014); the proofs were not. Residual risk: an unindexed thesis or preprint —
-a standard arXiv/journal check at submission time is recommended.
+Some OEIS pages were retrieved through cached search records. Source wording is reported as observed; no claim of a comprehensive historical audit is made. The paper cites the primary results that it uses and does not treat formal verification as evidence of novelty.

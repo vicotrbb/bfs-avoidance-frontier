@@ -1,7 +1,7 @@
 /-
 Sanity checks.
 
-1. `#print axioms` — verifies both theorems depend on nothing beyond the
+1. `#print axioms` ; verifies both theorems depend on nothing beyond the
    three standard Lean axioms (no `sorry`).
 2. Concrete witnesses tying the formal definitions to the intended
    objects, machine-checked by `decide` / explicit constructors:
@@ -10,12 +10,13 @@ Sanity checks.
    * `theoremA`/`theoremB` instantiate on concrete words.
 -/
 import BfsWords.Trees
+import BfsWords.ParentSequence
 
 namespace BfsWords
 
 -- The word 1 4 2 5 3 (0-indexed heap condition holds: parents 1,1,4,4→2?).
 -- As a heap array [1,4,2,5,3]: parent of index 1 is 0 (1<4 ✓), of 2 is 0
--- (1<2 ✓), of 3 is 1 (4<5 ✓), of 4 is 1 (4>3 ✗) — NOT a heap word.
+-- (1<2 ✓), of 3 is 1 (4<5 ✓), of 4 is 1 (4>3 ✗) ; NOT a heap word.
 example : ¬ HeapCond [1, 4, 2, 5, 3] := by
   intro h
   have := h 4 (by omega) (by simp)
@@ -51,13 +52,13 @@ example : UBWord [1, 4, 2, 5, 3] := by
     simpa using this
 
 -- [1,4,2,5,3] contains 312? Its subsequences: 4,2,5 has b=2<c=5? pattern
--- (4,2,5): b<c and c<a fails (5>4). (4,2,3): 2<3<4 ✓ — a 312 occurrence.
+-- (4,2,5): b<c and c<a fails (5>4). (4,2,3): 2<3<4 ✓ ; a 312 occurrence.
 example : Has312 [1, 4, 2, 5, 3] := by
   refine ⟨4, 2, 3, ?_, by omega, by omega⟩
   decide
 
 -- Consistency of Theorem A on this word: it is UBWord but not HeapCond,
--- so by `theoremA` it must NOT avoid 312 — matching the example above.
+-- so by `theoremA` it must NOT avoid 312 ; matching the example above.
 
 -- A 231-avoiding odd-length example for Theorem B:
 -- w = [1,2,4,3,5]: levels (1)(2)(4,3)(5)? or (1)(2,4)(3,5)...
@@ -78,7 +79,7 @@ example : UBWord [1, 2, 4, 3, 5] := by
 
 -- Full binary witness for the same word, as Theorem B promises
 -- (231-avoidance of [1,2,4,3,5]: ascent pairs all have later elements
--- above the smaller element — no (c < a < b) subsequence).
+-- above the smaller element ; no (c < a < b) subsequence).
 example : BWord [1, 2, 4, 3, 5] := by
   refine ⟨1, [[2, 4], [3, 5]], by simp, ?_⟩
   refine ChainB.cons (by simp) ?_ (ChainB.cons (by simp) ?_ ChainB.nil)
@@ -93,6 +94,9 @@ example : BWord [1, 2, 4, 3, 5] := by
         (by simpa using h2)
     simpa using this
 
+#print axioms parent_theoremA_iff
+#print axioms parent_theoremB
+#print axioms regroup_full_children
 #print axioms theoremA
 #print axioms theoremB
 #print axioms ubword_iff_tree

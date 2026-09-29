@@ -1,117 +1,60 @@
 # BFS-Avoidance Frontier
 
-**Two rigidity theorems for pattern-avoiding BFS reading words of increasing
-trees — resolving three conjectures recorded in the OEIS, with prose proofs,
-exhaustive computational verification, and complete machine-checked
-formalizations in Lean 4.**
+**Rigidity of Pattern-Avoiding Breadth-First Reading Words of Increasing Trees**
 
-## The problem
+For every branching bound `k >= 2`, this work proves two equalities of sets of reading words:
 
-An *increasing tree* on `n` nodes carries the labels `1..n` with every child
-larger than its parent. Its *BFS reading word* is the permutation obtained by
-reading the labels level by level, left to right. Levin, Pudwell, Riehl and
-Sandberg (*Pattern avoidance in k-ary heaps*, Australas. J. Combin. 64 (2016))
-asked how many permutations avoid a classical length-3 pattern **and** arise
-as such reading words. Six OEIS sequences (A245898–A245903) cover unary-binary
-trees (≤ 2 children per node) and full binary trees (0 or 2 children) against
-the patterns 231, 312 and 321 — all six were tagged `more` ("needs extension")
-with only 5–8 known terms each, frozen since 2014.
+- A 312-avoiding permutation is realizable on an increasing ordered tree of maximum outdegree k exactly when it satisfies the complete k-ary heap inequalities.
+- A 231-avoiding permutation of length `1 modulo k` realizable with maximum outdegree k is realizable on a full k-ary tree.
 
-## Results
+Both arguments use the nondecreasing sequence of BFS parent positions. They preserve the word itself. The full-degree construction is linear in the word length when supplied with an initial realization.
 
-**Theorem A (312 heap collapse).** A 312-avoiding permutation is the BFS word
-of *some* increasing unary-binary tree **iff** it satisfies the plain
-binary-heap array condition `w[⌊i/2⌋] < w[i]`. Realizability over the entire
-infinite family of tree shapes collapses to one fixed shape, and the
-conjectured bijection is the **identity map**. This settles the conjecture
-recorded in OEIS A246747 ("May be equal to A245899") and yields
-`A245902(k) = A245899(2k−1)`; A245899 thereby inherits a proven
-Catalan-convolution recurrence.
+[Read the paper](paper/main.pdf) | [Mathematical statements](docs/THEOREMS.md) | [Verification scope](docs/COMPUTATIONAL_VERIFICATION.md) | [Release instructions](release/README.md)
 
-**Theorem B (231 parity collapse).** Every odd-length 231-avoiding BFS word of
-an increasing unary-binary tree is also the BFS word of an increasing *full
-binary* tree. Hence `A245901(k) = A245898(2k−1)`.
+## Binary consequences
 
-**Sharpness.** Both collapses provably fail for the pattern 321: at length 11
-there are 8095 unary-binary words but only 8048 full-binary words; the 47
-counterexample permutations are listed explicitly as a certificate.
+The results imply, for positive indices:
 
-**Key technical ingredient.** An unconditional *promotion cascade* lemma:
-growing a BFS level by the next element never destroys realizability of the
-remaining suffix — true for **all** words, no pattern hypothesis. Pattern
-avoidance is needed at exactly one parity-driven extension step, which is
-precisely where 321 breaks.
+- `A245899(n) = A246747(n)`.
+- `A245902(r) = A245899(2r-1)`.
+- `A245901(r) = A245898(2r-1)`.
 
-**New data.** 28 previously unknown sequence terms (A245898–A245900 extended
-from n = 8 to n = 14; A245901–A245903 from length 9 to length 15). See
-[`data/NEW_TERMS.md`](data/NEW_TERMS.md).
+A245899 inherits the known Catalan-convolution recurrence for heaps. The 321 heap analogue first fails at length 4, witnessed by 1423. The full binary analogue first fails at odd length 11: 8,095 unary-binary words versus 8,048 full binary words. All 47 missing words are retained as a certificate.
 
-## Three independent layers of verification
+The data package adds 28 entries to the six sequences relative to the retained baseline: 27 direct enumerations and A245898(15), inferred from the proved full binary identity. Many 312 values also occur in the earlier heap sequence. Defant's general heap theorem implies exponential growth rate 4 per vertex for all three patterns, for both bounded-degree and full trees at admissible sizes.
 
-1. **Prose proofs** — [`docs/THEOREMS.md`](docs/THEOREMS.md), self-contained
-   and human-readable.
-2. **Exhaustive computation** — every lemma and both theorems verified on all
-   instances at small sizes (hundreds of thousands of cases, zero failures),
-   plus two independent algorithms reproducing all 36 published OEIS terms:
-   [`docs/COMPUTATIONAL_VERIFICATION.md`](docs/COMPUTATIONAL_VERIFICATION.md),
-   runnable via `make verify-python`.
-3. **Machine-checked formalization** — complete Lean 4 proofs
-   ([`lean/`](lean/)), no `sorry`, standard axioms only, **stated on genuine
-   inductive trees** (`theoremA_trees`, `theoremB_trees`) via a proven
-   semantic bridge, so no encoding needs to be trusted. Verified end-to-end by
-   `make verify-lean`; the kernel-checked build *is* the proof.
+## Verification
 
-## Repository layout
+The development combines mathematical proofs with two explicitly scoped verification methods:
 
-```
-├── README.md                        ← you are here
-├── LICENSE                          MIT
-├── CITATION.cff                     citation metadata
-├── Makefile                         make all | verify-python | verify-lean | recompute
-├── docs/
-│   ├── THEOREMS.md                  the theorems and their prose proofs
-│   ├── COMPUTATIONAL_VERIFICATION.md  double-computation methodology & matrix
-│   └── PRIOR_WORK.md                novelty audit (OEIS / arXiv sweep, July 2026)
-├── data/
-│   ├── NEW_TERMS.md                 all new sequence terms, consolidated
-│   ├── raw/                         solver outputs (ub_*.txt, b_*.txt)
-│   └── certificates/                the 47 explicit 321-counterexample words
-├── python/
-│   ├── reference.py                 brute-force ground truth (tree enumeration)
-│   ├── solver.py                    fast independent algorithm (pruned prefix-DFS)
-│   └── verify_theorems.py           exhaustive lemma/theorem verification suite
-└── lean/                            Lean 4 formalization (see lean/README.md)
-    └── BfsWords/                    Defs · Basic · Balanced · TheoremA ·
-                                     Cascade · B231 · TheoremB · Trees · Sanity
-```
+- **Lean 4:** the binary theorems are proved on inductive ordered trees through a semantic bridge. The arbitrary-k heap equivalence and full-degree construction are proved over the exact parent-sequence constraints. The general tree reconstruction is proved in the paper. The axiom audit reports only Lean's standard axioms. See [general-k formalization](docs/GENERAL_K_FORMALIZATION.md).
+- **Computation:** two enumerators agree on all retained counts through length 11. The full table is recomputed by the prefix-search solver. A separate degree-sequence dynamic program checks the exact counterexample list and general-k constructions. Recurrence checks cover the long 312 b-files. Finite computations verify their stated ranges.
 
-## Reproduce everything
+## Reproduce
+
+Requirements: Python 3 (standard library only), Lean 4.24.0 through elan, and a LaTeX distribution with latexmk.
 
 ```sh
-make verify-python   # ~1 min: all lemmas + theorems on exhaustive small cases
-make verify-lean     # Lean kernel checks every proof; prints the axiom audit
-make recompute       # regenerate the new OEIS terms (minutes)
+make verify-python       # binary suite and artifact checks through length 11
+make verify-lean         # all formal statements and the axiom audit
+make recompute           # every retained directly enumerated term
+make paper               # PDF from its LaTeX source
+make verify-publication  # sources, receipts, table, and punctuation checks
 ```
 
-Requirements: Python 3 (stdlib only); [elan](https://github.com/leanprover/elan)
-for Lean (toolchain pinned in `lean/lean-toolchain`, no external Lean
-dependencies).
+The full computation uses up to four processes. Retained execution receipts are in `data/verification/20260929/`. Detailed method and coverage are in `docs/COMPUTATIONAL_VERIFICATION.md`.
 
-## Status and provenance
+## Layout
 
-* The three resolved conjectures were open and publicly recorded (OEIS
-  A246747 cross-reference; sequence data coincidences) from 2014 until this
-  work (July 2026). [`docs/PRIOR_WORK.md`](docs/PRIOR_WORK.md) documents the
-  literature audit.
-* Research, proofs, code and formalization were produced in an AI-assisted
-  session (Claude, Anthropic) directed by the repository author; every claim
-  is independently checkable by the verification layers above, none of which
-  requires trusting that process.
-* Planned next steps: OEIS submissions (new terms + proof references) and an
-  arXiv note.
+- `paper/`: article source and PDF.
+- `lean/`: binary tree proofs, auxiliary promotion lemma, and general parent-sequence proofs.
+- `python/`: reference tree enumeration, prefix solver, independent degree-sequence recognition, and verification drivers.
+- `data/`: raw tables, new-entry summary, counterexamples, and verification receipts.
+- `oeis-submission/`: indexed b-files and contribution preparation notes.
+- `release/`: packaging, verification, metadata, and publication provenance.
 
-## Citing
+## Citation, licensing, and assistance
 
-See [`CITATION.cff`](CITATION.cff). If you extend the sequences or the
-theorems, a reference to this repository and to Levin–Pudwell–Riehl–Sandberg
-(2016) would be appreciated.
+See `CITATION.cff` for citation metadata and `LICENSES.md` for component licenses. Original code is MIT; the revised manuscript, documentation, and original research data are CC BY 4.0. Previously distributed versions retain their existing licenses.
+
+The work used Claude and Codex for assistance with exploration, writing, programs, and formalization. The author is responsible for the final mathematical statements and presentation. The repository is a research artifact; publication as a preprint does not signify journal acceptance.

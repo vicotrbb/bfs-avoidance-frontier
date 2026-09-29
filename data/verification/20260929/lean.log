@@ -1,0 +1,33 @@
+⚠ [5/13] Replayed BfsWords.TheoremA
+warning: BfsWords/TheoremA.lean:97:10: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [6/13] Built BfsWords.Cascade (1.1s)
+✔ [7/13] Built BfsWords.ParentSequence (1.5s)
+⚠ [8/13] Built BfsWords.B231 (522ms)
+warning: BfsWords/B231.lean:74:30: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: BfsWords/B231.lean:110:30: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: BfsWords/B231.lean:209:30: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [9/13] Built BfsWords.TheoremB (407ms)
+warning: BfsWords/TheoremB.lean:88:18: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [10/13] Built BfsWords.Trees (365ms)
+ℹ [11/13] Built BfsWords.Sanity (422ms)
+info: BfsWords/Sanity.lean:97:0: 'BfsWords.parent_theoremA_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BfsWords/Sanity.lean:98:0: 'BfsWords.parent_theoremB' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BfsWords/Sanity.lean:99:0: 'BfsWords.regroup_full_children' depends on axioms: [propext, Quot.sound]
+info: BfsWords/Sanity.lean:100:0: 'BfsWords.theoremA' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BfsWords/Sanity.lean:101:0: 'BfsWords.theoremB' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BfsWords/Sanity.lean:102:0: 'BfsWords.ubword_iff_tree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BfsWords/Sanity.lean:103:0: 'BfsWords.bword_iff_tree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BfsWords/Sanity.lean:104:0: 'BfsWords.theoremA_trees' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BfsWords/Sanity.lean:105:0: 'BfsWords.theoremB_trees' depends on axioms: [propext, Classical.choice, Quot.sound]
+✔ [12/13] Built BfsWords (155ms)
+Build completed successfully (13 jobs).
