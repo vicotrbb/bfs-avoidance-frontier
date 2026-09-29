@@ -1,0 +1,30 @@
+{
+  "status": "published",
+  "checked_at_utc": "2026-09-29T16:32:00.648178+00:00",
+  "record_url": "https://zenodo.org/records/23042420",
+  "doi": "10.5281/zenodo.23042420",
+  "concept_doi": "10.5281/zenodo.23042419",
+  "version": "1.1.0",
+  "resource_type": "Preprint",
+  "access": "open",
+  "license": "CC-BY-4.0",
+  "published_via": "Firefox native UI",
+  "pdf_filename": "bfs-avoidance-frontier-v1.1.0.pdf",
+  "pdf_pages": 10,
+  "pdf_bytes": 425079,
+  "pdf_md5": "3efac792baf676a0523b3ce0913e4f60",
+  "pdf_sha256": "82d64e62145db5cfd140ab359caa53d76f6898c8123cddfc8f1e34b0d883dd93",
+  "related_artifact": "https://github.com/vicotrbb/bfs-avoidance-frontier/releases/tag/v1.1.0",
+  "doi_resolver": {
+    "status": "not_yet_active",
+    "observed_message": "DOI NOT FOUND",
+    "checked_via": "Firefox"
+  },
+  "anonymous_access_verification": {
+    "checked_at_utc": "2026-09-29T16:31:23.394609+00:00",
+    "record_http_status": 200,
+    "file_http_status": 200,
+    "pdf_bytes": 425079,
+    "pdf_sha256": "82d64e62145db5cfd140ab359caa53d76f6898c8123cddfc8f1e34b0d883dd93"
+  }
+}

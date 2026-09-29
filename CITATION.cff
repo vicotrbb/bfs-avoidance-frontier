@@ -8,7 +8,8 @@ authors:
     affiliation: "Independent Researcher, Blumenau, Brazil"
 date-released: "2026-09-29"
 version: "1.1.0"
-url: "https://github.com/vicotrbb/bfs-avoidance-frontier"
+doi: "10.5281/zenodo.23042420"
+url: "https://zenodo.org/records/23042420"
 repository-code: "https://github.com/vicotrbb/bfs-avoidance-frontier"
 keywords:
   - enumerative combinatorics

@@ -9,7 +9,7 @@ For every branching bound `k >= 2`, this work proves two equalities of sets of r
 
 Both arguments use the nondecreasing sequence of BFS parent positions. They preserve the word itself. The full-degree construction is linear in the word length when supplied with an initial realization.
 
-[Read the paper](paper/main.pdf) | [Mathematical statements](docs/THEOREMS.md) | [Verification scope](docs/COMPUTATIONAL_VERIFICATION.md) | [Release instructions](release/README.md)
+[Published preprint](https://zenodo.org/records/23042420) | [Release v1.1.0](https://github.com/vicotrbb/bfs-avoidance-frontier/releases/tag/v1.1.0) | [Read the PDF](paper/main.pdf) | [Mathematical statements](docs/THEOREMS.md) | [Verification scope](docs/COMPUTATIONAL_VERIFICATION.md) | [Release instructions](release/README.md)
 
 ## Binary consequences
 
@@ -58,3 +58,9 @@ The full computation uses up to four processes. Retained execution receipts are 
 See `CITATION.cff` for citation metadata and `LICENSES.md` for component licenses. Original code is MIT; the revised manuscript, documentation, and original research data are CC BY 4.0. Previously distributed versions retain their existing licenses.
 
 The work used Claude and Codex for assistance with exploration, writing, programs, and formalization. The author is responsible for the final mathematical statements and presentation. The repository is a research artifact; publication as a preprint does not signify journal acceptance.
+
+## Publication
+
+Version 1.1.0 is published as an open Zenodo preprint under CC BY 4.0: [record 23042420](https://zenodo.org/records/23042420), DOI `10.5281/zenodo.23042420`. The GitHub release contains the PDF, complete 74-file research archive, manifest, verification log, and checksums. Publication receipts are retained in `release/`.
+
+The release tag identifies source commit `887087c14a3ca5163d9d2524dfea12d17638b708`. Subsequent citation metadata links this unchanged artifact to its Zenodo record. At the initial publication check, the direct Zenodo record was available and the DOI resolver had not yet activated.
